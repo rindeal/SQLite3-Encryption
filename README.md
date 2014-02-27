@@ -9,7 +9,7 @@ wxSQLite3 is a C++ wrapper around the public domain **SQLite 3.x database** and 
 Why?
 -----
 
-There are more ways how to add encryption to your SQLite3 DBs. However, this absolutely the most no-pain solution I've found for Windows.
+There are more ways how to add encryption to your SQLite3 DBs. However, this is absolutely the most no-pain solution I've found for Windows.
 
 How?
 -----
