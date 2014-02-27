@@ -49,21 +49,58 @@ How?
 API
 =====
 
-## sqlite3_rekey
-### Set the key for use with the database
+Functions
+-----------
+
+### sqlite3_key, sqlite3_key_v2
+> Set the key for use with the database
+
+- This routine should be called right after `sqlite3_open`.
+- The `sqlite3_key_v2` call performs the same way as `sqlite3_key`, but sets the encryption key on a named database instead of the main database.
+
 ```c
 int sqlite3_key(
   sqlite3 *db,                   /* Database to be rekeyed */
   const void *pKey, int nKey     /* The key, and the length of the key in bytes */
 );
+int sqlite3_key_v2(
+  sqlite3 *db,                   /* Database to be rekeyed */
+  const char *zDbName,           /* Name of the database */
+  const void *pKey, int nKey     /* The key, and the length of the key in bytes */
+);
 ```
-## sqlite3_rekey
-### Change the encryption key for a SQLCipher database
+
+The process of creating a new, encrypted database is called “keying” the database. This library uses just-in-time key derivation at the point it is first needed for an operation. This means that the key (and any options) must be set before the first operation on the database. As soon as the database is touched (e.g. SELECT, CREATE TABLE, UPDATE, etc.) and pages need to be read or written, the key is prepared for use.
+
+#### Testing the key
+When opening an existing database, `sqlite3_key` will not immediately throw an error if the key provided is incorrect. To test that the database can be successfully opened with the provided key, it is necessary to perform some operation on the database (i.e. read from it) and confirm it is success.
+
+The easiest way to do this is select off the `sqlite_master` table, which will attempt to read the first page of the database and will parse the schema.
+
+```sql
+SELECT count(*) FROM sqlite_master; -- if this throws an error, the key was incorrect. If it succeeds and returns a numeric value, the key is correct;
+```
+
+### sqlite3_rekey, sqlite3_rekey_v2
+> Change the encryption key for a SQLCipher database*
+
+- If the current database is not encrypted, this routine will encrypt it.
+- If `pNew==0` or `nNew==0`, the database is decrypted.
+- The `sqlite3_rekey_v2` call performs the same way as `sqlite3_rekey`, but sets the encryption key on a named database instead of the main database.
+
 ```c
 int sqlite3_rekey(
   sqlite3 *db,                   /* Database to be rekeyed */
   const void *pKey, int nKey     /* The new key, and the length of the key in bytes */
 );
+int sqlite3_rekey_v2(
+  sqlite3 *db,                   /* Database to be rekeyed */
+  const char *zDbName,           /* Name of the database */
+  const void *pKey, int nKey     /* The new key, and the length of the key in bytes */
+);
 ```
 
+----------
+
+##### [Read more](http://sqlcipher.net/sqlcipher-api/)
 
