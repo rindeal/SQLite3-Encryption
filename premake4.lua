@@ -1,3 +1,6 @@
+-- Copyright (c) Jan Chren 2014
+-- Licensed under BSD 3
+
 -- Build SQLite3
 --   static or shared library
 --   AES 128 bit or AES 256 bit encryption support
