@@ -39,8 +39,8 @@ How?
 
 #### Automatic
 
-- **Requires: bash, wget, zip**
-- if you have all these utilities in `%PATH%`, then just run `_update.bat`
+- **Requires: bash, wget, tar, gzip**
+- if you have all these utilities in `%PATH%`, then just run `premake4 update`
 
 
 #### Manual
