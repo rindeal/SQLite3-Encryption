@@ -93,6 +93,7 @@ solution "SQLite3"
     "SQLITE_ENABLE_RTREE",
     "SQLITE_CORE",
     "SQLITE_USE_URI",
+    "SQLITE_DEFAULT_PAGE_SIZE=4096", -- best performance
   }
   buildoptions {
     "/Qpar", -- Parallel Code Generation
