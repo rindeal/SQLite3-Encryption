@@ -21,7 +21,7 @@ How?
 #### Requirements
 
 - [MS Visual Studio](http://www.visualstudio.com/products/visual-studio-express-vs) 2012/13 *(2010 not tested)*
-- [Premake4](https://bitbucket.org/premake/) version **4.4+**
+- [Premake4](http://industriousone.com/premake/download) version **4.4+**
 
 #### Steps
 
