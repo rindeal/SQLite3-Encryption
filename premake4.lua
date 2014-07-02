@@ -47,7 +47,12 @@ if _ACTION == "clean" then
 end
 
 if _ACTION == "update" then
-  os.execute('@echo off && bash -i _update.sh')
+  os.execute('@echo off && set CYGWIN=nodosfilewarning && bash -i "%CD%\\_update.sh"')
+  os.exit()
+end
+
+if _ACTION == "compress" then
+  os.execute('_compress.bat')
   os.exit()
 end
 
