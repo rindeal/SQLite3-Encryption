@@ -1,18 +1,39 @@
 @echo off
 
-IF "%%~1"=="" GOTO START
+:: disable cygwin warnings, if upx is from cyg repos
+set CYGWIN=nodosfilewarning
 
-for %%F in ("%%~1") do set dirname=%%~dpF
-set dirname=%dirname%\compressed
-for /F %%i in ("%%~1") do set filename=%%~ni%%~xi
+call :recurse
+goto :eof
 
 
-md "%dirname%" 2> NUL
-del /F /Q "%dirname%\%filename%" 2> NUL
-upx.exe --output="%dirname%\%filename%" -v --brute --no-backup --overlay=strip --compress-icons=1 "%%~1"
+:recurse
+for %%f in ( *.dll, *.exe ) do call :compress "%CD%" "%%~nf" "%%~xf"
+for /D %%d in (*) do (
+    cd %%d
+    call :recurse
+    cd ..
+)
+exit /b
 
-goto:EOF
 
-:START
-for %%E in ( .dll, .exe ) do forfiles /M %%E /C 
+:compress
+set dir=%1
+set dir=%dir:"=%
+set file=%2
+set file=%file:"=%
+set ext=%3
+set ext=%ext:"=%
 
+set in=%dir%\%file%%ext%
+set out=%dir%\%file%_compressed%ext%
+
+:: skip if it's an already compressed file
+setlocal enableextensions enabledelayedexpansion
+if not x%file:compressed=%==x%file% exit /b
+endlocal
+
+del /f "%out%"
+upx.exe --output="%out%" -v --best --no-backup --overlay=strip --compress-icons=1 "%in%"
+
+exit /b
