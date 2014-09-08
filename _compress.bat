@@ -1,3 +1,6 @@
+:: Copyright (c) Jan Chren 2014
+:: Licensed under BSD 3
+
 @echo off
 
 :: disable cygwin warnings, if upx is from cyg repos

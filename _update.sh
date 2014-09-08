@@ -1,4 +1,6 @@
 #!/usr/bin/env bash -i
+# Copyright (c) Jan Chren 2014
+# Licensed under BSD 3
 
 export CYGWIN="nodosfilewarning $CYGWIN"
 
