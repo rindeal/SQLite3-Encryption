@@ -6,7 +6,7 @@ What?
 
 This repository is dedicated to a set of my scripts which drastically decrease the time you need to build SQLite3 DLL, SLL or shell.
 It's based on [**wxSQLite3**](http://wxcode.sourceforge.net/components/wxsqlite3/) which includes an optional extension for SQLite supporting key based database file encryption using **128/256\* bit AES encryption**. Although wxSQLite3 is specifically designed for use in programs based on the wxWidgets library it **can be used anywhere**, because the encryption extension is compatible with the SQLite amalgamation source.
-\**Experimental support for 256 bit AES encryption*
+\*Experimental support for 256 bit AES encryption
 
 #### TLDR: 
 > **SQLite3 with encryption support**
