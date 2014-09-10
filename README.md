@@ -6,7 +6,8 @@ What?
 
 This repository is dedicated to a set of my scripts which drastically decrease the time you need to build SQLite3 DLL, SLL or shell.
 It's based on [**wxSQLite3**](http://wxcode.sourceforge.net/components/wxsqlite3/) which includes an optional extension for SQLite supporting key based database file encryption using **128/256\* bit AES encryption**. Although wxSQLite3 is specifically designed for use in programs based on the wxWidgets library it **can be used anywhere**, because the encryption extension is compatible with the SQLite amalgamation source.
-_\*Experimental support for 256 bit AES encryption_
+
+_\*Support for 256 bit AES encryption is experimental_
 
 #### TLDR: 
 > **SQLite3 with encryption support**
@@ -73,6 +74,8 @@ How?
 9. And here we go `Build -> Build Solution` 
 10. There should be a `bin` dir in the project root folder where you'll find all required files
 11. *Optional* - If you have `upx.exe` compressor in `%PATH%` you can run \_compress.bat to create `*_compressed.%ext%` variants of all `*.dll` and `*.exe` binaries
+
+> Please note that by default it creates configuration files optimized for speed. Most of the optimizations is compatible with any PC, but eg. SSE2 and AVX CPU instruction sets may not be compatible with some older computers. If you want to remove these compiler/linker switches, please, look at the `premake4.lua` file or disable them in MS Visual Studio before you build the solution.
 
 ### How to update it to the most recent version of SQLite?
 Because the developers of the wxSQLite extension needs to incorporate the changes with every new version of SQLite, there is a time lag between a new version of SQLite and wxSQLite, but if you want to update this project to the most recent version of wxSQLite you can do this in two ways:
