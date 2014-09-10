@@ -7,9 +7,9 @@
 --   Debug or Release
 
 SRC_DIR="src"
-PRJ_NAME_LIB="sqlite3lib"
-PRJ_NAME_DLL="sqlite3dll"
-PRJ_NAME_SHELL="sqlite3shell"
+PRJ_NAME_LIB="sqlite3_lib"
+PRJ_NAME_DLL="sqlite3_dll"
+PRJ_NAME_SHELL="sqlite3_shell"
 
 function getSQLiteVersion()
   fh = io.open(SRC_DIR.."/sqlite3.h","r")
@@ -26,13 +26,13 @@ function getSQLiteVersion()
   return version
 end
 
-if _ACTION == nil then _ACTION = "vs2012" end
+if _ACTION == nil then _ACTION = "vs2012" end -- set a default action
 
 if _ACTION == "clean" then
   os.rmdir("bin")
   os.rmdir("build")
-  os.execute('for /d %d in ('..SRC_DIR..'\\*.tlog) do rd /q /s "%d"')
-  os.execute('del /Q /S /F /A *Log.htm thumbs.db *bak.def 2> NUL')
+  -- os.execute('for /d %d in ('..SRC_DIR..'\\*.tlog) do rd /q /s "%d"')
+  -- os.execute('del /Q /S /F /A *Log.htm thumbs.db *bak.def 2> NUL')
   extensions = { 
     "dll", "lib", "exe",
     "pdb", "exp", "obj", "manifest",
@@ -42,8 +42,8 @@ if _ACTION == "clean" then
   os.execute('@echo off && for %e in ('.. table.concat(extensions," ") ..') do del /Q /S /F /A *.%e 2> NUL')
   -- remove empty directories
   -- http://blogs.msdn.com/b/oldnewthing/archive/2008/04/17/8399914.aspx
-  os.execute('@echo off && for /f "usebackq" %d in (`"dir /ad/b/s | sort /R"`) do rd "%d" 2> NUL ')
-  os.exit()
+  -- os.execute('@echo off && for /f "usebackq" %d in (`"dir /ad/b/s | sort /R"`) do rd "%d" 2> NUL ')
+  -- os.exit() -- don NOT exit and let the native premake clean action run
 end
 
 if _ACTION == "update" then
@@ -56,24 +56,26 @@ if _ACTION == "compress" then
   os.exit()
 end
 
-io.write "Getting SQLite version... "
-
-SQLITE_VERSION=getSQLiteVersion()
-
--- create #define string
 SQLITE_VERSION_DEF=""
-for i in SQLITE_VERSION:gmatch("%d") do
-  SQLITE_VERSION_DEF = SQLITE_VERSION_DEF .. i .. ","
-end
-SQLITE_VERSION_DEF = SQLITE_VERSION_DEF .. "0"
 
-printf ("%s -> %s",SQLITE_VERSION,SQLITE_VERSION_DEF)
+if string.match(_ACTION, 'vs20') then
+  io.write "Getting SQLite version... "
+
+  SQLITE_VERSION=getSQLiteVersion()
+
+  -- create #define string
+  for i in SQLITE_VERSION:gmatch("%d") do
+    SQLITE_VERSION_DEF = SQLITE_VERSION_DEF .. i .. ","
+  end
+  SQLITE_VERSION_DEF = SQLITE_VERSION_DEF .. "0"
+
+  printf ("%s -> %s",SQLITE_VERSION,SQLITE_VERSION_DEF)
+end 
 
 solution "SQLite3"
   language "C++"
   configurations { "Debug_AES128", "Release_AES128", "Debug_AES256", "Release_AES256" }
   platforms { "x32", "x64" }
-  targetname "sqlite3"
   targetdir "$(SolutionDir)/bin/$(ProjectName)/$(Configuration)"
   files { SRC_DIR.."/sqlite3.rc" }
   defines { 'SQLITE_VERSION_DEF='..SQLITE_VERSION_DEF }
@@ -81,12 +83,12 @@ solution "SQLite3"
     "Unicode", 
     "OptimizeSpeed", 
     "NoFramePointer", 
-    "FloatFast",
-    -- "FloatStrict",
+    -- "FloatFast",
+    "FloatStrict",
     "NoPCH",
     "StaticRuntime"
   }
-  defines { 
+  defines {
     "_WINDOWS", 
     "THREADSAFE=1", 
     "SQLITE_HAS_CODEC", -- enable encryption
@@ -102,13 +104,18 @@ solution "SQLite3"
   }
   buildoptions {
     "/Qpar", -- Parallel Code Generation
+    "/MP",   -- Multi-processor Compilation (faster compilation))
     "/Ot",   -- Favor Speed
     "/GL",   -- Whole Optimization (requires /LTCG for linker)
-    "/MP",   -- Multi-processor Compilation (faster compilation))
+    "/O2",   -- just /O2
+    "/Ob1",  -- inlining
   }
-  linkoptions "/LTCG" -- Link Time Code Generation
+  linkoptions {
+    "/LTCG" -- Link Time Code Generation
+  }
 
   configuration "x32"
+    targetname "sqlite3"
     defines "WIN32"
     flags "EnableSSE2" -- SSE2 instructions
     
