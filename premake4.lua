@@ -17,7 +17,7 @@ function getSQLiteVersion()
   while true do
    line = fh.read(fh)
    if not line then break end
-   if line:sub(0,23) == "#define SQLITE_VERSION " then 
+   if line:sub(0,23) == "#define SQLITE_VERSION " then
      version=line:sub(line:find("%d.%d.%d"))
      break
    end
@@ -33,9 +33,9 @@ if _ACTION == "clean" then
   os.rmdir("build")
   -- os.execute('for /d %d in ('..SRC_DIR..'\\*.tlog) do rd /q /s "%d"')
   -- os.execute('del /Q /S /F /A *Log.htm thumbs.db *bak.def 2> NUL')
-  extensions = { 
-    "dll", "lib", "exe",
-    "pdb", "exp", "obj", "manifest",
+  extensions = {
+    --[["dll",]] --[["lib",]] "exe",
+    "pdb", --[["exp",]] "obj", "manifest",
     "sln", "suo", "sdf", "opensdf",
     "bak", "tmp", "log", "tlog",
   }
@@ -70,7 +70,7 @@ if string.match(_ACTION, 'vs20') then
   SQLITE_VERSION_DEF = SQLITE_VERSION_DEF .. "0"
 
   printf ("%s -> %s",SQLITE_VERSION,SQLITE_VERSION_DEF)
-end 
+end
 
 solution "SQLite3"
   language "C++"
@@ -78,37 +78,40 @@ solution "SQLite3"
   platforms { "x32", "x64" }
   targetdir "$(SolutionDir)/bin/$(ProjectName)/$(Configuration)"
   files { SRC_DIR.."/sqlite3.rc" }
-  defines { 'SQLITE_VERSION_DEF='..SQLITE_VERSION_DEF }
-  flags { 
-    "Unicode", 
-    "OptimizeSpeed", 
-    "NoFramePointer", 
+  flags {
+    "Unicode",
+    "OptimizeSpeed",
+    "NoFramePointer",
     -- "FloatFast",
     "FloatStrict",
     "NoPCH",
     "StaticRuntime"
   }
   defines {
-    "_WINDOWS", 
-    "THREADSAFE=1", 
+    "_WINDOWS",
+    "THREADSAFE=1",
+    "SQLITE_VERSION_DEF="..SQLITE_VERSION_DEF,
     "SQLITE_HAS_CODEC", -- enable encryption
     "SQLITE_SOUNDEX",
     "SQLITE_ENABLE_COLUMN_METADATA",
-    "SQLITE_SECURE_DELETE",
-    "SQLITE_ENABLE_FTS4",
+    -- "SQLITE_SECURE_DELETE", -- https://www.sqlite.org/compile.html#secure_delete
+    "SQLITE_ENABLE_FTS3",
     "SQLITE_ENABLE_FTS3_PARENTHESIS",
+    "SQLITE_ENABLE_FTS4",
     "SQLITE_ENABLE_RTREE",
+    -- "SQLITE_ENABLE_ICU",
     "SQLITE_CORE",
     "SQLITE_USE_URI",
     "SQLITE_DEFAULT_PAGE_SIZE=4096", -- best performance
   }
+  includedirs {
+    -- "include/icu",
+  }
   buildoptions {
-    "/Qpar", -- Parallel Code Generation
-    "/MP",   -- Multi-processor Compilation (faster compilation))
+    "/MP",   -- Multi-processor Compilation
     "/Ot",   -- Favor Speed
     "/GL",   -- Whole Optimization (requires /LTCG for linker)
     "/O2",   -- just /O2
-    "/Ob1",  -- inlining
   }
   linkoptions {
     "/LTCG" -- Link Time Code Generation
@@ -118,11 +121,17 @@ solution "SQLite3"
     targetname "sqlite3"
     defines "WIN32"
     flags "EnableSSE2" -- SSE2 instructions
-    
+    libdirs { 
+      -- "lib/icu",
+    }
+
   configuration "x64"
     targetname "sqlite3_x64"
     defines "WIN64"
     buildoptions "/arch:AVX" -- AVX instructions
+    libdirs {
+      -- "lib/icu64",
+    }
 
   configuration "Debug_AES128 or Debug_AES256"
     defines { "DEBUG", "_DEBUG" }
@@ -145,10 +154,10 @@ solution "SQLite3"
     vpaths {
       ["Header Files"] = { "**.h" },
       ["Source Files"] = { "**.c" }
-    }	
+    }
     files { SRC_DIR.."/sqlite3secure.c", SRC_DIR.."/*.h" }
     defines "_LIB"
-  
+
   -- SQLite3 as shared library
   project (PRJ_NAME_DLL)
     uuid "DA8570DF-BED3-8844-BF37-CBBACB650F31"
@@ -160,8 +169,8 @@ solution "SQLite3"
     }
     files { SRC_DIR.."/sqlite3secure.c", SRC_DIR.."/*.h", SRC_DIR.."/sqlite3.def" }
     defines "_USRDLL"
-  
-  -- SQLite3 Shell   
+
+  -- SQLite3 Shell
   project (PRJ_NAME_SHELL)
     uuid "BA98AAC1-AACD-2F4F-8EDB-CF7C62668BC4"
     kind "ConsoleApp"
