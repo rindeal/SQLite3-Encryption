@@ -6,6 +6,12 @@
 --   AES 128 bit or AES 256 bit encryption support
 --   Debug or Release
 
+-- TODO:
+--    - add cmdline options to:
+--        - disable speed optimizations
+--        - enable memory/space optimizations
+--        - enable ICU 
+
 SRC_DIR="src"
 PRJ_NAME_LIB="sqlite3_lib"
 PRJ_NAME_DLL="sqlite3_dll"
@@ -24,6 +30,10 @@ function getSQLiteVersion()
   end
   fh:close()
   return version
+end
+
+function getScriptDir( )
+  return debug.getinfo(1).source:match("@(.*[\\/]).+$")
 end
 
 if _ACTION == nil then _ACTION = "vs2012" end -- set a default action
@@ -47,7 +57,7 @@ if _ACTION == "clean" then
 end
 
 if _ACTION == "update" then
-  os.execute('@echo off && set CYGWIN=nodosfilewarning && bash -i "%CD%\\_update.sh"')
+  os.execute('powershell "'..getScriptDir()..'update.ps1"')
   os.exit()
 end
 
@@ -148,7 +158,7 @@ solution "SQLite3"
 
   -- SQLite3 as static library
   project (PRJ_NAME_LIB)
-    uuid "5104BC68-6E98-864B-9DBC-8D87F537B771"
+    uuid "E24BB52B-63B2-4B08-A3AF-39727F47EE3B"
     kind "StaticLib"
     location ("build/"..PRJ_NAME_LIB)
     vpaths {
@@ -160,7 +170,7 @@ solution "SQLite3"
 
   -- SQLite3 as shared library
   project (PRJ_NAME_DLL)
-    uuid "DA8570DF-BED3-8844-BF37-CBBACB650F31"
+    uuid "DC071BDB-3DA0-4777-ACFE-B7C4607FF017"
     kind "SharedLib"
     location ("build/"..PRJ_NAME_DLL)
     vpaths {
@@ -172,7 +182,7 @@ solution "SQLite3"
 
   -- SQLite3 Shell
   project (PRJ_NAME_SHELL)
-    uuid "BA98AAC1-AACD-2F4F-8EDB-CF7C62668BC4"
+    uuid "84DB93F6-E8D8-487A-9A31-1E2CF60EB09F"
     kind "ConsoleApp"
     location ("build/"..PRJ_NAME_SHELL)
     files { SRC_DIR.."/sqlite3.h", SRC_DIR.."/shell.c" }

@@ -6,6 +6,7 @@
 :: disable cygwin warnings, if upx is from cyg repos
 set CYGWIN=nodosfilewarning
 
+pushd "%~dp0bin"
 call :recurse
 goto :eof
 
