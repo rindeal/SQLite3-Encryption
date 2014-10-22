@@ -33,7 +33,7 @@ function getSQLiteVersion()
 end
 
 function getScriptDir( )
-  return debug.getinfo(1).source:match("@(.*[\\/]).+$")
+  return string.gsub(debug.getinfo(1).source:match("@(.*[\\/]).+$"), '/', '\\')
 end
 
 if _ACTION == nil then _ACTION = "vs2012" end -- set a default action
@@ -57,7 +57,7 @@ if _ACTION == "clean" then
 end
 
 if _ACTION == "update" then
-  os.execute('powershell "'..getScriptDir()..'tools/update.ps1"')
+  os.execute('powershell -File "'..getScriptDir()..'tools\\update.ps1"')
   os.exit()
 end
 
