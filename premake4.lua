@@ -57,12 +57,12 @@ if _ACTION == "clean" then
 end
 
 if _ACTION == "update" then
-  os.execute('powershell "'..getScriptDir()..'update.ps1"')
+  os.execute('powershell "'..getScriptDir()..'tools/update.ps1"')
   os.exit()
 end
 
 if _ACTION == "compress" then
-  os.execute('_compress.bat')
+  os.execute('"'..getScriptDir()..'tools\\_compress.bat"')
   os.exit()
 end
 
