@@ -32,9 +32,10 @@ set ext=%ext:"=%
 set in=%dir%\%file%%ext%
 set out=%dir%\%file%_compressed%ext%
 
-:: skip if it's an already compressed file
+:: skip if it's an already compressed file or premake executable
 setlocal enableextensions enabledelayedexpansion
 if not x%file:compressed=%==x%file% exit /b
+if not x%file:premake=%==x%file% exit /b
 endlocal
 
 del /f "%out%"

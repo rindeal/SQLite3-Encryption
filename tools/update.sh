@@ -5,7 +5,7 @@
 export CYGWIN="nodosfilewarning $CYGWIN"
 
 OUTPUT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-OUTPUT_DIR+="/src"
+OUTPUT_DIR+="/../src"
 
 WXSQLITE_SF_API_URL="http://sourceforge.net/api/file/index/project-id/51305/crtime/desc/limit/2/path/Components%2fwxSQLite3/rss"
 WXSQLITE_SF_API_SRC="$( wget -qO - "$WXSQLITE_SF_API_URL" | tr -d "\n" )"
