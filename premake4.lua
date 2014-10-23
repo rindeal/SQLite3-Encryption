@@ -69,8 +69,6 @@ end
 SQLITE_VERSION_DEF=""
 
 if string.match(_ACTION, 'vs20') then
-  io.write "Getting SQLite version... "
-
   SQLITE_VERSION=getSQLiteVersion()
 
   -- create #define string
