@@ -1,11 +1,13 @@
 wxSQLite3 in Visual Studio
 ============================
 
+For those in a hurry, click [here](#how)
+
 What?
 ------
 
 This repository is dedicated to a set of my scripts which drastically decrease the time you need to build SQLite3 DLL, SLL or shell.
-It's based on [**wxSQLite3**](http://wxcode.sourceforge.net/components/wxsqlite3/) which includes an optional extension for SQLite supporting key based database file encryption using **128/256\* bit AES encryption**. Although wxSQLite3 is specifically designed for use in programs based on the wxWidgets library it **can be used anywhere**, because the encryption extension is compatible with the SQLite amalgamation source.
+It's based on [**wxSQLite3**][wxsqlite3-source] which includes an optional extension for SQLite supporting key based database file encryption usinxg **128/256\* bit AES encryption**. Although wxSQLite3 is specifically designed for use in programs based on the [wxWidgets library](https://www.wxwidgets.org/) it **can be used anywhere**, because the encryption extension is compatible with the [SQLite amalgamation source](https://www.sqlite.org/amalgamation.html).
 
 _\*Support for 256 bit AES encryption is experimental_
 
@@ -60,38 +62,28 @@ How?
 #### Steps
 
 1. [Download this repository](https://github.com/rindeal/wxSQLite3-VS/archive/master.zip)
-2. Extract the dir `wxSQLite3-VS-master` from the archive wherever you want and rename it to whatever you want
-3. Open CMD
-4. `cd` into that folder
-5. type one of:
-  - `premake4` - *recommended*, by default it creates MS VS 2012 files, which can be upgraded upwards
-  - `premake4 vs2010`
-  - `premake4 vs2012`
-  - `premake4 vs2013` *(returns errors in my case)*
-6. the solution file (`.sln`) should be now in the project root folder, open it in VS as usual
-7. upgrade the solution if needed, eg. if you have VS2013 and you created 2012 solution (automatic prompt or `Project -> Upgrade Solution`)
-8. `Build -> Configuration Manager` and choose configurations and platforms you want to build
-9. And here we go `Build -> Build Solution` 
-10. There should be a `bin` dir in the project root folder where you'll find all required files
-11. *Optional* - If you have `upx.exe` compressor in `%PATH%` you can run \_compress.bat to create `*_compressed.%ext%` variants of all `*.dll` and `*.exe` binaries
+2. Extract the dir `wxSQLite3-VS-master` and open it
+3. Run `premake4.bat`
+4. the solution file (`.sln`) should be now in the project root folder, open it in VS as usual and upgrade the solution if needed, eg. if you have VS2013 and you created 2012 solution (automatic prompt or `Project -> Upgrade Solution`)
+5. `Build -> Configuration Manager` and choose configurations and platforms you want to build
+6. And here we go `Build -> Build Solution` 
+7. There should be a `bin` dir in the project root folder where you'll find all required files
 
-> Please note that by default it creates configuration files optimized for speed. Most of the optimizations is compatible with any PC, but eg. SSE2 and AVX CPU instruction sets may not be compatible with some older computers. If you want to remove these compiler/linker switches, please, look at the `premake4.lua` file or disable them in MS Visual Studio before you build the solution.
+> Please note that by default it creates configuration files optimized for speed. Most of the optimizations are compatible with any PC, but eg. SSE2 and AVX CPU instruction sets may not be compatible with some older computers. If you want to remove these compiler/linker switches, please, look at the `premake4.lua` file or disable them in MS Visual Studio before you build the solution.
 
 ### How to update it to the most recent version of SQLite?
 Because the developers of the wxSQLite extension needs to incorporate the changes with every new version of SQLite, there is a time lag between a new version of SQLite and wxSQLite, but if you want to update this project to the most recent version of wxSQLite you can do this in two ways:
 
 #### Automatic
 
-- **Requires: bash, wget, tar, cat, grep, sed**
-- if you have all these utilities in `%PATH%`, then just run `premake4 update`
-- if you have the utilities in `$PATH` (for Cygwin, MSYS...), then run `./\_update.sh` from your Cygwin/MSYS/... shell
+- Run `tools\update.bat` or `premake update`
 
 #### Manual
 
-1. Download the latest [wxsqlite3](http://sourceforge.net/projects/wxcode/files/Components/wxSQLite3/)
-2. Extract the `wxsqlite3-*/sqlite3/secure/src` dir from the archive to `src` in the project root dir.
+1. Download the latest [wxsqlite3 source code](http://sourceforge.net/projects/wxcode/files/Components/wxSQLite3/)
+2. Extract the `wxsqlite3-*/sqlite3/secure/src` dir from the archive to `src` dir in the project root dir.
 
-API
+SQLite3 Encryption API
 =====
 
 Functions
@@ -176,9 +168,12 @@ rekey with null
 use as usual
 ```
 
-## Read more
-- http://sqlcipher.net/sqlcipher-api/
-- http://wxcode.sourceforge.net/components/wxsqlite3/
-- http://wxcode.sourceforge.net/docs/wxsqlite3/
-
 ----------
+## Read more
+- [sqlcipher-api]
+- [wxsqlite3-source]
+- [wxsqlite3-docs]
+
+[sqlcipher-api]: http://sqlcipher.net/sqlcipher-api/ "SQLCipher API"
+[wxsqlite3-source]: http://wxcode.sourceforge.net/components/wxsqlite3/ "wxSQLite3 Source Code"
+[wxsqlite3-docs]: http://wxcode.sourceforge.net/docs/wxsqlite3/ "wxSQLite3 Docs"
