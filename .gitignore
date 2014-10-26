@@ -11,3 +11,5 @@
 !.gitignore
 !lib/
 !lib64/
+
+*.html

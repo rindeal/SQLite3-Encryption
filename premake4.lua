@@ -12,7 +12,8 @@
 --        - enable memory/space optimizations
 --        - enable ICU 
 
-SRC_DIR="src"
+SOL_ROOT_DIR="."
+SRC_DIR=SOL_ROOT_DIR.."/src"
 PRJ_NAME_LIB="sqlite3_lib"
 PRJ_NAME_DLL="sqlite3_dll"
 PRJ_NAME_SHELL="sqlite3_shell"
@@ -36,8 +37,35 @@ function getScriptDir( )
   return string.gsub(debug.getinfo(1).source:match("@(.*[\\/]).+$"), '/', '\\')
 end
 
+-- override some actions
+newaction {trigger="xcode3", description="disabled"}
+newaction {trigger="xcode4", description="disabled"}
+newaction {trigger="vs2002", description="disabled"}
+newaction {trigger="vs2003", description="disabled"}
+newaction {trigger="vs2005", description="disabled"}
+newaction {trigger="vs2008", description="disabled"}
+
+newaction {
+   trigger     = "update",
+   description = "Updates the wxSQLite to its newest version",
+   execute = function ()
+        os.execute('powershell -ExecutionPolicy Unrestricted -File "'..getScriptDir()..'tools\\update.ps1"')
+        os.exit()
+   end
+}
+
+newaction {
+   trigger     = "compress",
+   description = "Updates the wxSQLite to its newest version",
+   execute = function ()
+      os.execute('"'..getScriptDir()..'tools\\_compress.bat"')
+      os.exit()
+   end
+}
+
 if _ACTION == nil then _ACTION = "vs2012" end -- set a default action
 
+-- hook on the clean action
 if _ACTION == "clean" then
   os.rmdir("bin")
   os.rmdir("build")
@@ -56,16 +84,6 @@ if _ACTION == "clean" then
   -- os.exit() -- don NOT exit and let the native premake clean action run
 end
 
-if _ACTION == "update" then
-  os.execute('powershell -File "'..getScriptDir()..'tools\\update.ps1"')
-  os.exit()
-end
-
-if _ACTION == "compress" then
-  os.execute('"'..getScriptDir()..'tools\\_compress.bat"')
-  os.exit()
-end
-
 SQLITE_VERSION_DEF=""
 
 if string.match(_ACTION, 'vs20') then
@@ -76,8 +94,7 @@ if string.match(_ACTION, 'vs20') then
     SQLITE_VERSION_DEF = SQLITE_VERSION_DEF .. i .. ","
   end
   SQLITE_VERSION_DEF = SQLITE_VERSION_DEF .. "0"
-
-  printf ("%s -> %s",SQLITE_VERSION,SQLITE_VERSION_DEF)
+  
 end
 
 solution "SQLite3"
