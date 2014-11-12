@@ -5,16 +5,15 @@ For those in a hurry, click [here](#how)
 
 What?
 ------
+> **SQLite3 with encryption support**
 
-This repository is dedicated to a set of my scripts which drastically decrease the time you need to build SQLite3 DLL, SLL or shell.
-It's based on [**wxSQLite3**][wxsqlite3-source] which includes an optional extension for SQLite supporting key based database file encryption usinxg **128/256\* bit AES encryption**. Although wxSQLite3 is specifically designed for use in programs based on the [wxWidgets library](https://www.wxwidgets.org/) it **can be used anywhere**, because the encryption extension is compatible with the [SQLite amalgamation source](https://www.sqlite.org/amalgamation.html).
+This repository is dedicated to a set of my scripts which drastically decrease the time and effort you need to build SQLite3 DLL, SLL or shell.
+It's based on [**wxSQLite3**][wxsqlite3-source] which includes an optional extension for SQLite supporting key based database file encryption using **128/256\* bit AES encryption**. Although wxSQLite3 is specifically designed for use in programs based on the [wxWidgets library](https://www.wxwidgets.org/) it **can be used anywhere**, because the encryption extension is compatible with the [SQLite amalgamation source](https://www.sqlite.org/amalgamation.html).
 
 _\*Support for 256 bit AES encryption is experimental_
 
-#### TLDR: 
-> **SQLite3 with encryption support**
-
-With this solution you can build anything or all of the below:
+### What can be built with this solution?
+> sqlite3-x{86, 64}.{dll, lib, exe} - ({128, 256}-bit AES)
 
 ##### Dynamically linked library
 - sqlite3.dll (128-bit AES)
@@ -34,17 +33,16 @@ With this solution you can build anything or all of the below:
 - sqlite3.exe (256-bit AES)
 - sqlite3-x64.exe (256-bit AES)
 
-##### TLDR:
-> sqlite3-x{86, 64}.{dll, lib, exe} - ({128, 256}-bit AES)
+I should also mention that they're produced **without** any special runtime dependencies like .NET Framework or Microsoft Visual C++ Redistributable Packages
 
 Why?
 -----
 
-There are more ways how to add a *native* on-the-fly encryption layer to your SQLite3 DBs. Namely:
+There are more ways how to add a _native_ on-the-fly encryption layer to your SQLite3 DBs. Namely:
 
-- [SQLite Encryption Extension](https://www.sqlite.org/see) - from authors of SQLite, it's commercial and the license costs $2000
-- [SQLCipher](https://www.zetetic.net/sqlcipher/) - partially opensource, but I didn't manage to get it working
-- [SQLiteCrypt](http://sqlite-crypt.com/index.htm) - commercial, the license costs $128
+- [SQLite Encryption Extension](https://www.sqlite.org/see) - from authors of SQLite, commercial, $2000
+- [SQLCipher](https://www.zetetic.net/sqlcipher/) - partially opensource, but I didn't manage to get it working on Windows
+- [SQLiteCrypt](http://sqlite-crypt.com/index.htm) - commercial, $128
 
 But I find this solution the most easiest and convenient one.
 
@@ -57,17 +55,17 @@ How?
 
 - Windows 7 and up
 - [MS Visual Studio](http://www.visualstudio.com/products/visual-studio-express-vs) 2012/13 *(2010 not tested)*
-- [Premake4](http://industriousone.com/premake/download) version **4.4+** (*included in the repo*)
+- [Premake4](http://industriousone.com/premake/download) version **4.4+** _(included in the repo)_
 
 #### Steps
 
 1. [Download this repository](https://github.com/rindeal/wxSQLite3-VS/archive/master.zip)
 2. Extract the dir `wxSQLite3-VS-master` and open it
 3. Run `premake4.bat`
-4. the solution file (`.sln`) should be now in the project root folder, open it in VS as usual and upgrade the solution if needed, eg. if you have VS2013 and you created 2012 solution (automatic prompt or `Project -> Upgrade Solution`)
+4. Open the produced solution file (`.sln`) that should be now in the project root folder, open it in VS as usual and upgrade the solution if needed, eg. if you have VS2013 and you created 2012 solution (automatic prompt or `Project -> Upgrade Solution`)
 5. `Build -> Configuration Manager` and choose configurations and platforms you want to build
 6. And here we go `Build -> Build Solution` 
-7. There should be a `bin` dir in the project root folder where you'll find all required files
+7. You should find the produced binaries in `bin` dir in the project root folder
 
 > Please note that by default it creates configuration files optimized for speed. Most of the optimizations are compatible with any PC, but eg. SSE2 and AVX CPU instruction sets may not be compatible with some older computers. If you want to remove these compiler/linker switches, please, look at the `premake4.lua` file or disable them in MS Visual Studio before you build the solution.
 
@@ -77,6 +75,8 @@ Because the developers of the wxSQLite extension needs to incorporate the change
 #### Automatic
 
 - Run `tools\update.bat` or `premake update`
+
+> *Requires _PowerShell_
 
 #### Manual
 
