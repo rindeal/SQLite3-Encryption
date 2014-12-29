@@ -57,13 +57,11 @@ How?
 
 #### Steps
 
-1. [Download this repository](https://github.com/rindeal/wxSQLite3-VS/archive/master.zip)
-2. Extract the dir `wxSQLite3-VS-master` and open it
-3. Run `premake.bat` or `premake4.bat`
-4. Open the produced solution file (`.sln`) that should be now in the project root folder, open it in VS as usual and upgrade the solution if needed, eg. if you have VS2013 and you created 2012 solution (automatic prompt or `Project -> Upgrade Solution`)
-5. `Build -> Configuration Manager` and choose configurations and platforms you want to build
-6. And here we go `Build -> Build Solution` 
-7. You should find the produced binaries in `bin` dir in the project root folder
+1. [Download snapshot of this repository](repo-dl), unzip and open it
+2. Run `premake.bat` or `premake4.bat`
+3. The script should generate a solution file (_.sln_) in the project root dir, open it in VS as usual and upgrade the solution when needed, eg. if you have VS2013 and the script created VS2012 solution (automatic prompt or `Project -> Upgrade Solution`)
+4. `Build -> Configuration Manager` and choose configurations and platforms you want to build
+5. And here we go `Build -> Build Solution`, which should produce binaries in the `bin` dir
 
 **Following these steps and building all binaries in their _Release_ versions took me ~2 minutes on my laptop.**
 
@@ -80,7 +78,7 @@ Because the developers of the wxSQLite extension needs to incorporate the change
 
 #### Manual
 
-1. Download the latest [wxsqlite3 source code](http://sourceforge.net/projects/wxcode/files/Components/wxSQLite3/)
+1. Download the latest [wxsqlite3 source code](wxsqlite3-dl)
 2. Extract the `wxsqlite3-*/sqlite3/secure/src` dir from the archive to `src` dir in the project root dir.
 
 SQLite3 Encryption API
@@ -177,3 +175,5 @@ use as usual
 [sqlcipher-api]: http://sqlcipher.net/sqlcipher-api/ "SQLCipher API"
 [wxsqlite3-source]: http://wxcode.sourceforge.net/components/wxsqlite3/ "wxSQLite3 Source Code"
 [wxsqlite3-docs]: http://wxcode.sourceforge.net/docs/wxsqlite3/ "wxSQLite3 Docs"
+[wxsqlite3-dl]: http://sourceforge.net/projects/wxcode/files/Components/wxSQLite3/ "wxSQLite3 Download"
+[repo-dl]: https://github.com/rindeal/SQLite3-Encryption/archive/master.zip "Download repository"
