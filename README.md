@@ -57,7 +57,7 @@ How?
 
 #### Steps
 
-1. [Download snapshot of this repository](repo-dl), unzip and open it
+1. [Download snapshot of this repository][repo-dl], unzip and open it
 2. Run `premake.bat` or `premake4.bat`
 3. The script should generate a solution file (_.sln_) in the project root dir, open it in VS as usual and upgrade the solution when needed, eg. if you have VS2013 and the script created VS2012 solution (automatic prompt or `Project -> Upgrade Solution`)
 4. `Build -> Configuration Manager` and choose configurations and platforms you want to build
@@ -78,7 +78,7 @@ Because the developers of the wxSQLite extension needs to incorporate the change
 
 #### Manual
 
-1. Download the latest [wxsqlite3 source code](wxsqlite3-dl)
+1. Download the latest [wxsqlite3 source code][wxsqlite3-dl]
 2. Extract the `wxsqlite3-*/sqlite3/secure/src` dir from the archive to `src` dir in the project root dir.
 
 SQLite3 Encryption API
