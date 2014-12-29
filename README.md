@@ -53,9 +53,7 @@ How?
 
 #### Requirements
 
-- Windows 7 and up
-- [MS Visual Studio](http://www.visualstudio.com/products/visual-studio-express-vs) 2012/13 *(2010 not tested)*
-- [Premake4](http://industriousone.com/premake/download) version **4.4+** _(included in the repo)_
+- Windows with [MS Visual Studio](http://www.visualstudio.com/products/visual-studio-express-vs) 2012/13 *(2010 not tested)*
 
 #### Steps
 
