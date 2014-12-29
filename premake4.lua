@@ -56,7 +56,7 @@ newaction {
 
 newaction {
    trigger     = "compress",
-   description = "Updates the wxSQLite to its newest version",
+   description = "Compresses the produced binaries (.dll, .exe) with UPX",
    execute = function ()
       os.execute('"'..getScriptDir()..'tools\\_compress.bat"')
       os.exit()
