@@ -10,7 +10,7 @@
 --    - add cmdline options to:
 --        - disable speed optimizations
 --        - enable memory/space optimizations
---        - enable ICU 
+--        - enable ICU
 
 SOL_ROOT_DIR="."
 SRC_DIR=SOL_ROOT_DIR.."/src"
@@ -49,8 +49,8 @@ newaction {
    trigger     = "update",
    description = "Updates the wxSQLite to its newest version",
    execute = function ()
-        os.execute('powershell -ExecutionPolicy Unrestricted -File "'..getScriptDir()..'tools\\update.ps1"')
-        os.exit()
+      os.execute('powershell -ExecutionPolicy Unrestricted -File "'..getScriptDir()..'tools\\update.ps1"')
+      os.exit()
    end
 }
 
@@ -65,7 +65,7 @@ newaction {
 
 if _ACTION == nil then _ACTION = "vs2012" end -- set a default action
 
--- hook on the clean action
+-- hook for the clean action
 if _ACTION == "clean" then
   os.rmdir("bin")
   os.rmdir("build")
@@ -86,7 +86,7 @@ end
 
 SQLITE_VERSION_DEF=""
 
-if string.match(_ACTION, 'vs20') then
+if string.match(_ACTION, 'vs201') then
   SQLITE_VERSION=getSQLiteVersion()
 
   -- create #define string
@@ -94,7 +94,7 @@ if string.match(_ACTION, 'vs20') then
     SQLITE_VERSION_DEF = SQLITE_VERSION_DEF .. i .. ","
   end
   SQLITE_VERSION_DEF = SQLITE_VERSION_DEF .. "0"
-  
+
 end
 
 solution "SQLite3"
@@ -142,34 +142,46 @@ solution "SQLite3"
     "/LTCG" -- Link Time Code Generation
   }
 
+  -- Configurations
+  ------------------
+
+  -- x32
   configuration "x32"
     targetname "sqlite3"
     defines "WIN32"
     flags "EnableSSE2" -- SSE2 instructions
-    libdirs { 
+    libdirs {
       -- "lib/icu",
     }
 
+  -- x64
   configuration "x64"
     targetname "sqlite3_x64"
     defines "WIN64"
-    buildoptions "/arch:AVX" -- AVX instructions
+    -- buildoptions "/arch:AVX" -- AVX instructions
     libdirs {
       -- "lib/icu64",
     }
 
+  -- Debug
   configuration "Debug_AES128 or Debug_AES256"
     defines { "DEBUG", "_DEBUG" }
     flags { "Symbols" }
 
+  -- Release
   configuration "Release_AES128 or Release_AES256"
     defines { "NDEBUG" }
 
+  -- AES128
   configuration "Debug_AES128 or Release_AES128"
     defines { "CODEC_TYPE=CODEC_TYPE_AES128" }
 
+  -- AES256
   configuration "Debug_AES256 or Release_AES256"
     defines { "CODEC_TYPE=CODEC_TYPE_AES256" }
+
+  -- Projects
+  ------------
 
   -- SQLite3 as static library
   project (PRJ_NAME_LIB)

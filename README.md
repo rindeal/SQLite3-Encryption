@@ -1,14 +1,12 @@
-wxSQLite3 in Visual Studio
+SQLite3 with encryption support
 ============================
 
 For those in a hurry, click [here](#how)
 
 What?
 ------
-> **SQLite3 with encryption support**
-
 This repository is dedicated to a set of my scripts which drastically decrease the time and effort you need to build SQLite3 DLL, SLL or shell.
-It's based on [**wxSQLite3**][wxsqlite3-source] which includes an optional extension for SQLite supporting key based database file encryption using **128/256\* bit AES encryption**. Although wxSQLite3 is specifically designed for use in programs based on the [wxWidgets library](https://www.wxwidgets.org/) it **can be used anywhere**, because the encryption extension is compatible with the [SQLite amalgamation source](https://www.sqlite.org/amalgamation.html).
+It's based on [**wxSQLite3**][wxsqlite3-source] which includes an optional extension for SQLite3 supporting **key based** database file **encryption** using **128/256\* bit AES encryption**. Although wxSQLite3 is specifically designed for use in programs based on the [wxWidgets library](https://www.wxwidgets.org/), it **can be used just like a normal SQLite3 library**, because the encryption extension is compatible with the [amalgamated SQLite3 source](https://www.sqlite.org/amalgamation.html).
 
 _\*Support for 256 bit AES encryption is experimental_
 
@@ -33,18 +31,18 @@ _\*Support for 256 bit AES encryption is experimental_
 - sqlite3.exe (256-bit AES)
 - sqlite3-x64.exe (256-bit AES)
 
-I should also mention that these binaries are built **without any** special runtime **dependencies** like _Microsoft .NET Framework_ or _Microsoft Visual C++ Redistributable Packages_
+#### I should also highlight the fact that the produced binaries do NOT require any special runtime dependencies like _Microsoft .NET Framework_ or _Microsoft Visual C++ Redistributable Packages_
 
 Why?
 -----
 
 There are more ways how to add a _native_ on-the-fly encryption layer to your SQLite3 DBs. Namely:
 
-- [SQLite Encryption Extension](https://www.sqlite.org/see) - from authors of SQLite, commercial, $2000
-- [SQLCipher](https://www.zetetic.net/sqlcipher/) - partially opensource, but I didn't manage to get it working on Windows
-- [SQLiteCrypt](http://sqlite-crypt.com/index.htm) - commercial, $128
+- [SQLite Encryption Extension](http://www.sqlite.org/see) - from authors of SQLite, commercial, $2000
+- [SQLCipher](http://www.zetetic.net/sqlcipher/) - partially opensource, but I didn't manage to get it working on Windows
+- [SQLiteCrypt](http://sqlite-crypt.com) - commercial, $128
 
-But I find this solution the most easiest and convenient one.
+But after a few hours spent trying to build _SQLCipher_, I've decided to create something a bit easier to build.
 
 How?
 -----
@@ -63,23 +61,24 @@ How?
 4. `Build -> Configuration Manager` and choose configurations and platforms you want to build
 5. And here we go `Build -> Build Solution`, which should produce binaries in the `bin` dir
 
-**Following these steps and building all binaries in their _Release_ versions took me ~2 minutes on my laptop.**
+#### Following these steps and building all binaries in their _Release_ versions took me ~2 minutes on my laptop.
 
-> Please note that by default it creates configuration files optimized for speed. Most of the optimizations are compatible with any PC, but eg. AVX CPU instruction sets may not be compatible with some older computers. If you want to remove these compiler/linker switches, please, look at the `premake4.lua` file or disable them in MS Visual Studio before you build the solution.
+### How to update to the latest version of SQLite?
+Because developers of the wxSQLite extension needs to incorporate changes with every new version of SQLite, there is a time lag between a new version of SQLite and wxSQLite. If you want to update to the latest version of wxSQLite, you can do so in two ways:
 
-### How to update it to the most recent version of SQLite?
-Because the developers of the wxSQLite extension needs to incorporate the changes with every new version of SQLite, there is a time lag between a new version of SQLite and wxSQLite, but if you want to update this project to the most recent version of wxSQLite you can do this in two ways:
-
-#### Automatic
+#### 1. Automatic
 
 - Run `tools\update.bat` or `premake update`
 
 > *Requires _PowerShell_
 
-#### Manual
+#### 2. Manual
 
-1. Download the latest [wxsqlite3 source code][wxsqlite3-dl]
+1. [Download the source code][wxsqlite3-dl] of the latest release of _wxsqlite3_
 2. Extract the `wxsqlite3-*/sqlite3/secure/src` dir from the archive to `src` dir in the project root dir.
+
+#### Notes
+- `VERSIONS` file in the repo root dir keeps an overview of versions of individual components provided in the repo
 
 SQLite3 Encryption API
 =====
