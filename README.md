@@ -31,7 +31,7 @@ _\*Support for 256 bit AES encryption is experimental_
 - sqlite3.exe (256-bit AES)
 - sqlite3-x64.exe (256-bit AES)
 
-#### I should also highlight the fact that the produced binaries do NOT require any special runtime dependencies like _Microsoft .NET Framework_ or _Microsoft Visual C++ Redistributable Packages_
+**I should also highlight the fact that the produced binaries do NOT require any special runtime dependencies like _Microsoft .NET Framework_ or _Microsoft Visual C++ Redistributable Packages_**
 
 Why?
 -----
@@ -61,7 +61,7 @@ How?
 4. `Build -> Configuration Manager` and choose configurations and platforms you want to build
 5. And here we go `Build -> Build Solution`, which should produce binaries in the `bin` dir
 
-#### Following these steps and building all binaries in their _Release_ versions took me ~2 minutes on my laptop.
+**Following these steps and building all binaries in their _Release_ versions took me ~2 minutes on my laptop.**
 
 ### How to update to the latest version of SQLite?
 Because developers of the wxSQLite extension needs to incorporate changes with every new version of SQLite, there is a time lag between a new version of SQLite and wxSQLite. If you want to update to the latest version of wxSQLite, you can do so in two ways:
