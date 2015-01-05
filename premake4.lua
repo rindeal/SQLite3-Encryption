@@ -1,4 +1,4 @@
--- Copyright (c) Jan Chren 2014
+-- Copyright (c) Jan Chren 2014-2015
 -- Licensed under BSD 3
 
 -- Build SQLite3
