@@ -5,7 +5,7 @@ For those in a hurry, click [here](#how)
 
 What?
 ------
-This repository is dedicated to a set of my scripts which drastically decrease the time and effort you need to build SQLite3 DLL, SLL or shell.
+This repository is dedicated to a set of my scripts which drastically decrease the time and effort you need to build SQLite3 DLL, SLL or shell on the Windows platform (Linux's nature allows it to be built easily natively).
 It's based on [**wxSQLite3**][wxsqlite3-source] which includes an optional extension for SQLite3 supporting **key based** database file **encryption** using **128/256\* bit AES encryption**. Although wxSQLite3 is specifically designed for use in programs based on the [wxWidgets library](https://www.wxwidgets.org/), it **can be used just like a normal SQLite3 library**, because the encryption extension is compatible with the [amalgamated SQLite3 source](https://www.sqlite.org/amalgamation.html).
 
 _\*Support for 256 bit AES encryption is experimental_
