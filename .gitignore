@@ -6,6 +6,7 @@
 [Bb]in/
 *.sln
 *.sdf
+*.suo
 
 !premake4.exe
 !.gitignore
