@@ -187,7 +187,7 @@ solution "SQLite3"
   project (PRJ_NAME_LIB)
     uuid "E24BB52B-63B2-4B08-A3AF-39727F47EE3B"
     kind "StaticLib"
-    location ("build/"..PRJ_NAME_LIB)
+    location (BUILD_DIR.."/"..PRJ_NAME_LIB)
     vpaths {
       ["Header Files"] = { "**.h" },
       ["Source Files"] = { "**.c" }
@@ -199,19 +199,22 @@ solution "SQLite3"
   project (PRJ_NAME_DLL)
     uuid "DC071BDB-3DA0-4777-ACFE-B7C4607FF017"
     kind "SharedLib"
-    location ("build/"..PRJ_NAME_DLL)
+    location (BUILD_DIR.."/"..PRJ_NAME_DLL)
     vpaths {
-      ["Header Files"] = { "**.h" },
-      ["Source Files"] = { "**/sqlite3secure.c", "**.def" }
+      ["Header Files"] = { SRC_DIR.."/*.h" },
+      ["Source Files"] = { SRC_DIR.."/sqlite3secure.c", SRC_DIR.."/*.def" }
     }
-    files { SRC_DIR.."/sqlite3secure.c", SRC_DIR.."/*.h", SRC_DIR.."/sqlite3.def" }
+    files { SRC_DIR.."/sqlite3secure.c", SRC_DIR.."/*.h", SRC_DIR.."/sqlite3.def", SRC_DIR.."/sqlite3.rc" }
     defines "_USRDLL"
 
   -- SQLite3 Shell
   project (PRJ_NAME_SHELL)
     uuid "84DB93F6-E8D8-487A-9A31-1E2CF60EB09F"
     kind "ConsoleApp"
-    location ("build/"..PRJ_NAME_SHELL)
-    files { SRC_DIR.."/sqlite3.h", SRC_DIR.."/shell.c" }
+    location (BUILD_DIR.."/"..PRJ_NAME_SHELL)
+    files { SRC_DIR.."/sqlite3.h", SRC_DIR.."/shell.c", SRC_DIR.."/sqlite3shell.rc" }
     links { PRJ_NAME_LIB }
-    defines "SQLITE_THREADSAFE=0" -- CLI is single threaded
+    defines {
+      "SQLITE_THREADSAFE=0", -- CLI is always single threaded
+      "SQLITE_ENABLE_EXPLAIN_COMMENTS"
+    }
