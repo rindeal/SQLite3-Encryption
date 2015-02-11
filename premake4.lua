@@ -93,7 +93,12 @@ end
 --------------------
 solution "SQLite3"
   language "C++"
-  configurations { "Debug_AES128", "Release_AES128", "Debug_AES256", "Release_AES256" }
+  configurations {
+    "Debug_AES128",
+    "Release_AES128",
+    "Debug_AES256",
+    "Release_AES256"
+  }
   platforms { "x32", "x64" }
   targetdir "$(SolutionDir)/bin/$(ProjectName)/$(Configuration)"
   flags {
@@ -188,7 +193,10 @@ solution "SQLite3"
       ["Header Files"] = { "**.h" },
       ["Source Files"] = { "**.c" }
     }
-    files { SRC_DIR.."/sqlite3secure.c", SRC_DIR.."/*.h" }
+    files {
+      SRC_DIR.."/sqlite3secure.c",
+      SRC_DIR.."/*.h"
+    }
     defines "_LIB"
 
   -- SQLite3 as shared library
@@ -198,9 +206,17 @@ solution "SQLite3"
     location (BUILD_DIR.."/"..PRJ_NAME_DLL)
     vpaths {
       ["Header Files"] = { SRC_DIR.."/*.h" },
-      ["Source Files"] = { SRC_DIR.."/sqlite3secure.c", SRC_DIR.."/*.def" }
+      ["Source Files"] = {
+        SRC_DIR.."/sqlite3secure.c",
+        SRC_DIR.."/*.def"
+      }
     }
-    files { SRC_DIR.."/sqlite3secure.c", SRC_DIR.."/*.h", SRC_DIR.."/sqlite3.def", SRC_DIR.."/sqlite3.rc" }
+    files {
+      SRC_DIR.."/sqlite3secure.c",
+      SRC_DIR.."/*.h",
+      SRC_DIR.."/sqlite3.def",
+      SRC_DIR.."/sqlite3.rc"
+    }
     defines "_USRDLL"
 
   -- SQLite3 Shell
@@ -208,9 +224,13 @@ solution "SQLite3"
     uuid "84DB93F6-E8D8-487A-9A31-1E2CF60EB09F"
     kind "ConsoleApp"
     location (BUILD_DIR.."/"..PRJ_NAME_SHELL)
-    files { SRC_DIR.."/sqlite3.h", SRC_DIR.."/shell.c", SRC_DIR.."/sqlite3shell.rc" }
+    files {
+      SRC_DIR.."/sqlite3.h",
+      SRC_DIR.."/shell.c",
+      SRC_DIR.."/sqlite3shell.rc"
+    }
     links { PRJ_NAME_LIB }
     defines {
-      "SQLITE_THREADSAFE=0", -- CLI is always single threaded
+      "SQLITE_THREADSAFE=0", -- CLI is always single threaded, generates warnings because of a collision with previous definitions
       "SQLITE_ENABLE_EXPLAIN_COMMENTS"
     }
