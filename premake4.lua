@@ -104,7 +104,6 @@ solution "SQLite3"
     "FloatStrict",
     "NoPCH",
     "StaticRuntime",
-    "EnableSSE2", --- SSE2 instructions
   }
   defines {
     "_WINDOWS",
@@ -144,6 +143,9 @@ solution "SQLite3"
     defines "WIN32"
     libdirs {
       -- "lib/icu",
+    }
+    flags{
+      "EnableSSE2", --- SSE2 instructions, enabled by default for x64
     }
 
   -- x64
