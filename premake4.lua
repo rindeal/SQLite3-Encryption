@@ -12,58 +12,63 @@
 --        - enable memory/space optimizations
 --        - enable ICU
 
-SOL_ROOT_DIR="."
-SRC_DIR=SOL_ROOT_DIR.."/src"
-PRJ_NAME_LIB="sqlite3_lib"
-PRJ_NAME_DLL="sqlite3_dll"
-PRJ_NAME_SHELL="sqlite3_shell"
+SOL_ROOT_DIR    = "."
+SRC_DIR         = SOL_ROOT_DIR.."/src"
+BUILD_DIR       = SOL_ROOT_DIR.."/build"
+PRJ_NAME_LIB    = "sqlite3_lib"
+PRJ_NAME_DLL    = "sqlite3_dll"
+PRJ_NAME_SHELL  = "sqlite3_shell"
 
-function getSQLiteVersion()
-  fh = io.open(SRC_DIR.."/sqlite3.h","r")
-  local version=""
-  while true do
-   line = fh.read(fh)
-   if not line then break end
-   if line:sub(0,23) == "#define SQLITE_VERSION " then
-     version=line:sub(line:find("%d.%d.%d"))
-     break
-   end
-  end
-  fh:close()
-  return version
-end
 
 function getScriptDir( )
   return string.gsub(debug.getinfo(1).source:match("@(.*[\\/]).+$"), '/', '\\')
 end
 
--- override some actions
-newaction {trigger="xcode3", description="disabled"}
-newaction {trigger="xcode4", description="disabled"}
-newaction {trigger="vs2002", description="disabled"}
-newaction {trigger="vs2003", description="disabled"}
-newaction {trigger="vs2005", description="disabled"}
-newaction {trigger="vs2008", description="disabled"}
+-- set default action
+if _ACTION == nil then _ACTION = "vs2012" end
+premake.action.list.vs2012.description = "(default) " .. premake.action.list.vs2012.description
+
+-- disable some actions/options
+-------------------------------
+premake.action.list.xcode3 = nil
+premake.action.list.xcode4 = nil
+premake.action.list.vs2002 = nil
+premake.action.list.vs2003 = nil
+premake.action.list.vs2005 = nil
+premake.action.list.vs2008 = nil
+
+-- not yet implemented ------
+premake.action.list.codeblocks = nil
+premake.action.list.codelite = nil
+premake.action.list.gmake = nil
+-----------------------------
+
+premake.option.list.os = nil
+premake.option.list.dotnet = nil
+premake.option.list.cc = nil
+premake.option.list.platform.allowed = { { "x32", "32-bit" }, { "x64", "64-bit" } }
+-------------------------------
+
+-- local inspect = require('inspect')
+-- print(inspect(premake))
 
 newaction {
-   trigger     = "update",
-   description = "Updates the wxSQLite to its newest version",
-   execute = function ()
+  trigger     = "update",
+  description = "Updates the wxSQLite to its newest version",
+  execute     = function ()
       os.execute('powershell -ExecutionPolicy Unrestricted -File "'..getScriptDir()..'tools\\update.ps1"')
       os.exit()
-   end
+    end
 }
 
 newaction {
-   trigger     = "compress",
-   description = "Compresses the produced binaries (.dll, .exe) with UPX",
-   execute = function ()
-      os.execute('"'..getScriptDir()..'tools\\_compress.bat"')
+  trigger     = "compress",
+  description = "Compresses the produced binaries (.dll, .exe) with UPX",
+  execute     = function ()
+      os.execute('"'..getScriptDir()..'tools\\compress.bat"')
       os.exit()
-   end
+    end
 }
-
-if _ACTION == nil then _ACTION = "vs2012" end -- set a default action
 
 -- hook for the clean action
 if _ACTION == "clean" then
@@ -84,25 +89,13 @@ if _ACTION == "clean" then
   -- os.exit() -- don NOT exit and let the native premake clean action run
 end
 
-SQLITE_VERSION_DEF=""
-
-if string.match(_ACTION, 'vs201') then
-  SQLITE_VERSION=getSQLiteVersion()
-
-  -- create #define string
-  for i in SQLITE_VERSION:gmatch("%d") do
-    SQLITE_VERSION_DEF = SQLITE_VERSION_DEF .. i .. ","
-  end
-  SQLITE_VERSION_DEF = SQLITE_VERSION_DEF .. "0"
-
-end
-
+-- Solution
+--------------------
 solution "SQLite3"
   language "C++"
   configurations { "Debug_AES128", "Release_AES128", "Debug_AES256", "Release_AES256" }
   platforms { "x32", "x64" }
   targetdir "$(SolutionDir)/bin/$(ProjectName)/$(Configuration)"
-  files { SRC_DIR.."/sqlite3.rc" }
   flags {
     "Unicode",
     "OptimizeSpeed",
@@ -110,33 +103,33 @@ solution "SQLite3"
     -- "FloatFast",
     "FloatStrict",
     "NoPCH",
-    "StaticRuntime"
+    "StaticRuntime",
+    "EnableSSE2", --- SSE2 instructions
   }
   defines {
     "_WINDOWS",
-    "THREADSAFE=1",
-    "SQLITE_VERSION_DEF="..SQLITE_VERSION_DEF,
-    "SQLITE_HAS_CODEC", -- enable encryption
-    "SQLITE_SOUNDEX",
+    "SQLITE_THREADSAFE=2",                  -- http://www.sqlite.org/compile.html#threadsafe
+    "SQLITE_DEFAULT_PAGE_SIZE=4096",        -- better performance
+    "SQLITE_TEMP_STORE=2",                  -- http://www.sqlite.org/tempfiles.html#tempstore
+    "SQLITE_DEFAULT_TEMP_CACHE_SIZE=1024",  -- http://www.sqlite.org/tempfiles.html#otheropt
+    "SQLITE_HAS_CODEC",                     -- enable encryption extension
     "SQLITE_ENABLE_COLUMN_METADATA",
-    -- "SQLITE_SECURE_DELETE", -- https://www.sqlite.org/compile.html#secure_delete
-    "SQLITE_ENABLE_FTS3",
+    "SQLITE_ENABLE_FTS4",                   -- includes FTS3
     "SQLITE_ENABLE_FTS3_PARENTHESIS",
-    "SQLITE_ENABLE_FTS4",
     "SQLITE_ENABLE_RTREE",
     -- "SQLITE_ENABLE_ICU",
     "SQLITE_CORE",
     "SQLITE_USE_URI",
-    "SQLITE_DEFAULT_PAGE_SIZE=4096", -- best performance
+    "SQLITE_ALLOW_URI_AUTHORITY",
   }
   includedirs {
     -- "include/icu",
   }
   buildoptions {
-    "/MP",   -- Multi-processor Compilation
-    "/Ot",   -- Favor Speed
-    "/GL",   -- Whole Optimization (requires /LTCG for linker)
-    "/O2",   -- just /O2
+    "/MP", -- Multi-processor Compilation
+    "/Ot", -- Favor Speed
+    "/GL", -- Whole Optimization (requires /LTCG for linker)
+    "/O2", -- just /O2
   }
   linkoptions {
     "/LTCG" -- Link Time Code Generation
@@ -149,7 +142,6 @@ solution "SQLite3"
   configuration "x32"
     targetname "sqlite3"
     defines "WIN32"
-    flags "EnableSSE2" -- SSE2 instructions
     libdirs {
       -- "lib/icu",
     }
@@ -158,9 +150,11 @@ solution "SQLite3"
   configuration "x64"
     targetname "sqlite3_x64"
     defines "WIN64"
-    -- buildoptions "/arch:AVX" -- AVX instructions
     libdirs {
       -- "lib/icu64",
+    }
+    buildoptions{
+      -- "/arch:AVX"  -- AVX and lower instructions
     }
 
   -- Debug
