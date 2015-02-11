@@ -3,7 +3,7 @@
 
 @echo off
 
-:: disable cygwin warnings, if upx is from cyg repos
+:: disable cygwin warnings, if upx comes from cyg repos
 set CYGWIN=nodosfilewarning
 
 pushd "%~dp0bin"
@@ -32,13 +32,12 @@ set ext=%ext:"=%
 set in=%dir%\%file%%ext%
 set out=%dir%\%file%_compressed%ext%
 
-:: skip if it's an already compressed file or premake executable
+:: skip if it's an already compressed file
 setlocal enableextensions enabledelayedexpansion
 if not x%file:compressed=%==x%file% exit /b
-if not x%file:premake=%==x%file% exit /b
 endlocal
 
 del /f "%out%"
-upx.exe --output="%out%" -v --best --no-backup --overlay=strip --compress-icons=1 "%in%"
+upx --output="%out%" -v --best --no-backup --overlay=strip --compress-icons=1 "%in%"
 
 exit /b
