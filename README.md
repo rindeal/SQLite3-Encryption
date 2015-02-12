@@ -63,6 +63,9 @@ How?
 
 **Following these steps and building all binaries in their _Release_ versions took me ~2 minutes on my laptop.**
 
+### How to get those binaries without MSVS?
+Try to look for them [here](https://github.com/rindeal/SQLite3-Encryption/releases)
+
 ### How to update to the latest version of SQLite?
 Because developers of the wxSQLite extension needs to incorporate changes with every new version of SQLite, there is a time lag between a new version of SQLite and wxSQLite. If you want to update to the latest version of wxSQLite, you can do so in two ways:
 
