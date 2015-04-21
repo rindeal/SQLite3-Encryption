@@ -1,57 +1,51 @@
 SQLite3 with encryption support
 ============================
-
-For those in a hurry, click [here](#how)
+Original SQLite3 C library with support for full and transparent encryption
 
 What?
 ------
-This repository is dedicated to a set of my scripts which drastically decrease the time and effort you need to build SQLite3 DLL, SLL or shell on the Windows platform (Linux's nature allows it to be built easily natively).
-It's based on [**wxSQLite3**][wxsqlite3-source] which includes an optional extension for SQLite3 supporting **key based** database file **encryption** using **128/256\* bit AES encryption**. Although wxSQLite3 is specifically designed for use in programs based on the [wxWidgets library](https://www.wxwidgets.org/), it **can be used just like a normal SQLite3 library**, because the encryption extension is compatible with the [amalgamated SQLite3 source](https://www.sqlite.org/amalgamation.html).
+- SQLite3 with a key based transparent encryption layer (128/256*-bit AES), which encrypts everything including metadata
+- fully compatible with your current databases and your codebase
+  - you may for example encrypt your current databases, use them as long as you wish, then decide to decrypt them back to plain text and use them from the standard SQLite3 library
+- no external dependencies like _OpenSSL_, _Microsoft Visual C++ Redistributable Packages_, _Microsoft .NET Framework_, ...
+- build script currently generates only solution _(*.sln)_ files for Microsoft Visual Studio IDE, but as SQLite3 and wxSQLite3 are cross-platform, you may try to [download the original wxSQLite3 source code](https://sourceforge.net/projects/wxcode/files/Components/wxSQLite3) and built it yourself for your platform
 
-_\*Support for 256 bit AES encryption is experimental_
+_\*Support for 256 bit AES encryption is still experimental_
 
 ### What can be built with this solution?
 > sqlite3-x{86, 64}.{dll, lib, exe} - ({128, 256}-bit AES)
 
 ##### Dynamically linked library
-- sqlite3.dll (128-bit AES)
-- sqlite3-x64.dll (128-bit AES)
-- sqlite3.dll (256-bit AES)
-- sqlite3-x64.dll (256-bit AES)
+- sqlite3.dll (128/256-bit AES)
+- sqlite3-x64.dll (128/256-bit AES)
 
 ##### Statically linked library
-- sqlite3.lib (128-bit AES)
-- sqlite3-x64.lib (128-bit AES)
-- sqlite3.lib (256-bit AES)
-- sqlite3-x64.lib (256-bit AES)
+- sqlite3.lib (128/256-bit AES)
+- sqlite3-x64.lib (128/256-bit AES)
 
 ##### Command line shell
-- sqlite3.exe (128-bit AES)
-- sqlite3-x64.exe (128-bit AES)
-- sqlite3.exe (256-bit AES)
-- sqlite3-x64.exe (256-bit AES)
+- sqlite3.exe (128/256-bit AES)
+- sqlite3-x64.exe (128/256-bit AES)
 
-**I should also highlight the fact that the produced binaries do NOT require any special runtime dependencies like _Microsoft .NET Framework_ or _Microsoft Visual C++ Redistributable Packages_**
-
-Why?
+Alternatives
 -----
 
 There are more ways how to add a _native_ on-the-fly encryption layer to your SQLite3 DBs. Namely:
 
 - [SQLite Encryption Extension](http://www.sqlite.org/see) - from authors of SQLite, commercial, $2000
-- [SQLCipher](http://www.zetetic.net/sqlcipher/) - partially opensource, but I didn't manage to get it working on Windows
 - [SQLiteCrypt](http://sqlite-crypt.com) - commercial, $128
+- [SQLCipher](http://www.zetetic.net/sqlcipher/) - partially opensource (I didn't manage to get it working on Windows though)
 
-But after a few hours spent trying to build _SQLCipher_, I've decided to create something a bit easier to build.
+So after a few hours spent trying to build _SQLCipher_, I dived more deeply into the internet and found [wxSQLite3](http://wxcode.sourceforge.net/components/wxsqlite3/), did some scripting to ease the build and this is the result. 
 
-How?
+How to?
 -----
 
-### How to get from this page to successful build?
+### Compile it
 
 #### Requirements
 
-- Windows with [MS Visual Studio](http://www.visualstudio.com/products/visual-studio-express-vs) 2012/13 *(2010 not tested)*
+- Windows with [MS Visual Studio](http://www.visualstudio.com/products/visual-studio-express-vs) 2012+ *(2010 not tested but should work too)*
 
 #### Steps
 
@@ -63,10 +57,10 @@ How?
 
 **Following these steps and building all binaries in their _Release_ versions took me ~2 minutes on my laptop.**
 
-### How to get those binaries without MSVS?
+### Download prebuilt binaries
 Try to look for them [here](https://github.com/rindeal/SQLite3-Encryption/releases)
 
-### How to update to the latest version of SQLite?
+### Update to the latest version of SQLite
 Because developers of the wxSQLite extension needs to incorporate changes with every new version of SQLite, there is a time lag between a new version of SQLite and wxSQLite. If you want to update to the latest version of wxSQLite, you can do so in two ways:
 
 #### 1. Automatic
