@@ -27,17 +27,6 @@ _\*Support for 256 bit AES encryption is still experimental_
 - sqlite3.exe (128/256-bit AES)
 - sqlite3-x64.exe (128/256-bit AES)
 
-Alternatives
------
-
-There are more ways how to add a _native_ on-the-fly encryption layer to your SQLite3 DBs. Namely:
-
-- [SQLite Encryption Extension](http://www.sqlite.org/see) - from authors of SQLite, commercial, $2000
-- [SQLiteCrypt](http://sqlite-crypt.com) - commercial, $128
-- [SQLCipher](http://www.zetetic.net/sqlcipher/) - partially opensource (I didn't manage to get it working on Windows though)
-
-So after a few hours spent trying to build _SQLCipher_, I dived more deeply into the internet and found [wxSQLite3](http://wxcode.sourceforge.net/components/wxsqlite3/), did some scripting to ease the build and this is the result. 
-
 How to?
 -----
 
@@ -76,6 +65,17 @@ Because developers of the wxSQLite extension needs to incorporate changes with e
 
 #### Notes
 - `VERSIONS` file in the repo root dir keeps an overview of versions of individual components provided in the repo
+
+Alternatives
+-----
+
+There are more ways how to add a _native_ on-the-fly encryption layer to your SQLite3 DBs. Namely:
+
+- [SQLite Encryption Extension](http://www.sqlite.org/see) - from authors of SQLite, commercial, $2000
+- [SQLiteCrypt](http://sqlite-crypt.com) - commercial, $128
+- [SQLCipher](http://www.zetetic.net/sqlcipher/) - partially opensource (I didn't manage to get it working on Windows though)
+
+So after a few hours spent trying to build _SQLCipher_, I dived more deeply into the internet and found [wxSQLite3](http://wxcode.sourceforge.net/components/wxsqlite3/), did some scripting to ease the build and this is the result. 
 
 SQLite3 Encryption API
 =====
