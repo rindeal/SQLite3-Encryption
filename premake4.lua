@@ -112,7 +112,7 @@ solution "SQLite3"
   }
   defines {
     "_WINDOWS",
-    "SQLITE_THREADSAFE=2",                  -- http://www.sqlite.org/compile.html#threadsafe
+    "SQLITE_THREADSAFE=1",                  -- http://www.sqlite.org/compile.html#threadsafe
     "SQLITE_DEFAULT_PAGE_SIZE=4096",        -- better performance
     "SQLITE_TEMP_STORE=2",                  -- http://www.sqlite.org/tempfiles.html#tempstore
     "SQLITE_DEFAULT_TEMP_CACHE_SIZE=1024",  -- http://www.sqlite.org/tempfiles.html#otheropt
@@ -231,6 +231,6 @@ solution "SQLite3"
     }
     links { PRJ_NAME_LIB }
     defines {
-      "SQLITE_THREADSAFE=0", -- CLI is always single threaded, generates warnings because of a collision with previous definitions
+      -- "SQLITE_THREADSAFE=0", -- CLI is always single threaded, generates warnings because of a collision with previous definitions
       "SQLITE_ENABLE_EXPLAIN_COMMENTS"
     }
