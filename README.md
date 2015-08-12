@@ -132,11 +132,11 @@ int sqlite3_rekey_v2(
 PRAGMAs
 -------
 
-### Pragma key
+### PRAGMA key
 - it's wrapper around [sqlite3_key_v2](#sqlite3_key-sqlite3_key_v2)
 - example usage: `PRAGMA key='passphrase';`
 
-### Pragma rekey
+### PRAGMA rekey
 - it's wrapper around [sqlite3_rekey_v2](#sqlite3_rekey-sqlite3_rekey_v2)
 - example usage: `PRAGMA rekey='passphrase';`
 
