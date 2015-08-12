@@ -139,37 +139,38 @@ PRAGMAs
 ### PRAGMA rekey
 - it's wrapper around [sqlite3_rekey_v2](#sqlite3_rekey-sqlite3_rekey_v2)
 - example usage: `PRAGMA rekey='passphrase';`
+- example of decrpyting: `PRAGMA rekey='';`
 
 Tutorials
 ----------
 
 ### Encrypting a new db
 ```c
-open
-key
+open          // <-- db is still plain text
+key           // <-- db is now fully encrypted
 use as usual
 ```
 
 ### Opening an encrypted DB
 ```c
-open
-key
-use as usual
+open          // <-- db is fully encrypted
+key           // <-- db is still fully encrypted
+use as usual  // <-- read/written pages are fully encrypted and only decrypted in-memory
 ```
 
 ### Changing the key
 ```c
-open
-key
-rekey
-use as usual
+open          // <-- db is fully encrypted
+key           // <-- db is still fully encrypted
+rekey         // <-- db is still fully encrypted
+use as usual  
 ```
 
 ### Decrypting
 ```c
-open
-key
-rekey with null
+open              // <-- db is fully encrypted
+key               // <-- db is still fully encrypted
+rekey with null   // <-- db is now fully decrpyted to plain text
 use as usual
 ```
 
