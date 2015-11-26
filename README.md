@@ -139,7 +139,7 @@ PRAGMAs
 ### PRAGMA rekey
 - it's wrapper around [sqlite3_rekey_v2](#sqlite3_rekey-sqlite3_rekey_v2)
 - example usage: `PRAGMA rekey='passphrase';`
-- example of decrpyting: `PRAGMA rekey='';`
+- example of decrypting: `PRAGMA rekey='';`
 
 Tutorials
 ----------
@@ -170,7 +170,7 @@ use as usual
 ```c
 open              // <-- db is fully encrypted
 key               // <-- db is still fully encrypted
-rekey with null   // <-- db is now fully decrpyted to plain text
+rekey with null   // <-- db is now fully decrypted to plain text
 use as usual
 ```
 
