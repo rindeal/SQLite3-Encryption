@@ -7,7 +7,6 @@ What?
 - drop-in/drop-out
   - you may for example encrypt your current databases, use them as long as you wish, then decide to decrypt them back to plain text and use them from the standard SQLite3 library, also you may use this library just as a standard SQLite3 library
 - no external dependencies like _OpenSSL_, _Microsoft Visual C++ Redistributable Packages_, _Microsoft .NET Framework_, ...
-- build script currently generates only solution _(*.sln)_ files for Microsoft Visual Studio IDE, but as SQLite3 and wxSQLite3 are cross-platform, you may try to [download the original wxSQLite3 source code](https://sourceforge.net/projects/wxcode/files/Components/wxSQLite3) and built it yourself for your platform
 
 _\*Support for 256 bit AES encryption is still experimental_
 
@@ -31,6 +30,8 @@ How to?
 
 ### Compile it
 
+Build script currently generates only solution _(*.sln)_ files for Microsoft Visual Studio IDE, but as SQLite3 and wxSQLite3 are cross-platform, you may try to [download the original wxSQLite3 source code][wxsqlite3-dl] and built it yourself for your platform.
+
 #### 1. Requirements
 
 - Windows with [MS Visual Studio](https://www.visualstudio.com/products/visual-studio-express-vs) 2012+ *(2010 not tested but should work too)*
@@ -53,7 +54,7 @@ Because developers of the wxSQLite extension needs to incorporate changes with e
 
 #### 1. Automatic
 
-- Run `tools\update.bat` or `premake update`
+- Run `premake update` or `tools\update.bat`
 
 > *Requires _PowerShell_
 
