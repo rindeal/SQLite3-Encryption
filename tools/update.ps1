@@ -16,10 +16,10 @@ $PROJECT_ROOT_DIR = $(Resolve-Path "$PSScriptRoot\..")
 $OUTPUT_DIR       = "$PROJECT_ROOT_DIR\src"
 $TMP_FILE         = "$env:TMP\wxsqlite3.zip"
 
-$WXSQLITE_SF_API_URL = "http://sourceforge.net/projects/wxcode/rss?path=/Components/wxSQLite3&limit=2"
+$WXSQLITE_SF_API_URL = "http://sourceforge.net/projects/wxcode/rss?path=/Components/wxSQLite3&limit=3"
 $WXSQLITE_SF_API_SRC = $WebClient.DownloadString($WXSQLITE_SF_API_URL)
 $WXSQLITE_URL        = $WXSQLITE_SF_API_SRC -replace "`n|`r" -replace '.*<link>([^<]*\.zip\/download).*','$1'
-
+$WXSQLITE_URL
 
 function compareVersions ($a, $b){
     (New-Object System.Version($a)).CompareTo((New-Object System.Version($b)))
