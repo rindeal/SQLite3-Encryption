@@ -82,6 +82,11 @@ SQLite3 Encryption API
 Functions
 -----------
 
+```c
+#define SQLITE_HAS_CODEC
+#include <sqlite3.h>
+```
+
 ### sqlite3_key, sqlite3_key_v2
 > Set the key for use with the database
 
@@ -180,8 +185,8 @@ use as usual
 - [wxsqlite3-docs]
 
 [sqlcipher-api]: https://sqlcipher.net/sqlcipher-api/ "SQLCipher API"
-[wxsqlite3]: http://wxcode.sourceforge.net/components/wxsqlite3/ "wxSQLite3 Homepage"
-[wxsqlite3-source]: http://wxcode.sourceforge.net/components/wxsqlite3/ "wxSQLite3 Source Code"
-[wxsqlite3-docs]: http://wxcode.sourceforge.net/docs/wxsqlite3/ "wxSQLite3 Docs"
-[wxsqlite3-dl]: https://sourceforge.net/projects/wxcode/files/Components/wxSQLite3/ "wxSQLite3 Download"
+[wxsqlite3]: https://utelle.github.io/wxsqlite3 "wxSQLite3 Homepage"
+[wxsqlite3-source]: https://github.com/utelle/wxsqlite3 "wxSQLite3 Source Code"
+[wxsqlite3-docs]: https://utelle.github.io/wxsqlite3/docs/html/index.html "wxSQLite3 Docs"
+[wxsqlite3-dl]: https://github.com/utelle/wxsqlite3/releases "wxSQLite3 Download"
 [repo-dl]: https://github.com/rindeal/SQLite3-Encryption/archive/master.zip "Download repository"
