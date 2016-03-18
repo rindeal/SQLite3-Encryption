@@ -1,12 +1,11 @@
-SQLite3 with encryption support
+SQLite3 with encryption
 ============================
-Original SQLite3 C library with support for full and transparent encryption
 
 What?
 ------
 - SQLite3 with a key based transparent encryption layer (128/256*-bit AES), which encrypts everything including metadata
-- fully compatible with your current databases and your codebase
-  - you may for example encrypt your current databases, use them as long as you wish, then decide to decrypt them back to plain text and use them from the standard SQLite3 library
+- drop-in/drop-out
+  - you may for example encrypt your current databases, use them as long as you wish, then decide to decrypt them back to plain text and use them from the standard SQLite3 library, also you may use this library just as a standard SQLite3 library
 - no external dependencies like _OpenSSL_, _Microsoft Visual C++ Redistributable Packages_, _Microsoft .NET Framework_, ...
 - build script currently generates only solution _(*.sln)_ files for Microsoft Visual Studio IDE, but as SQLite3 and wxSQLite3 are cross-platform, you may try to [download the original wxSQLite3 source code](https://sourceforge.net/projects/wxcode/files/Components/wxSQLite3) and built it yourself for your platform
 
@@ -32,11 +31,11 @@ How to?
 
 ### Compile it
 
-#### Requirements
+#### 1. Requirements
 
-- Windows with [MS Visual Studio](http://www.visualstudio.com/products/visual-studio-express-vs) 2012+ *(2010 not tested but should work too)*
+- Windows with [MS Visual Studio](https://www.visualstudio.com/products/visual-studio-express-vs) 2012+ *(2010 not tested but should work too)*
 
-#### Steps
+#### 2. Steps
 
 1. [Download snapshot of this repository][repo-dl], unzip and open it
 2. Run `premake.bat` or `premake4.bat`
@@ -71,11 +70,11 @@ Alternatives
 
 There are more ways how to add a _native_ on-the-fly encryption layer to your SQLite3 DBs. Namely:
 
-- [SQLite Encryption Extension](http://www.sqlite.org/see) - from authors of SQLite, commercial, $2000
-- [SQLiteCrypt](http://sqlite-crypt.com) - commercial, $128
-- [SQLCipher](http://www.zetetic.net/sqlcipher/) - partially opensource (I didn't manage to get it working on Windows though)
+- [SQLite Encryption Extension](https://www.sqlite.org/see) - from authors of SQLite, commercial, $2000
+- [SQLiteCrypt](https://sqlite-crypt.com) - commercial, $128
+- [SQLCipher](https://www.zetetic.net/sqlcipher/) - partially opensource (I didn't manage to get it working on Windows though), depends on OpenSSL
 
-So after a few hours spent trying to build _SQLCipher_, I dived more deeply into the internet and found [wxSQLite3](http://wxcode.sourceforge.net/components/wxsqlite3/), did some scripting to ease the build and this is the result. 
+So after a few hours spent trying to build _SQLCipher_, I dived more deeply into the internet and found [wxSQLite3][wxsqlite3], did some scripting to ease the build and this is the result. 
 
 SQLite3 Encryption API
 =====
@@ -180,8 +179,9 @@ use as usual
 - [wxsqlite3-source]
 - [wxsqlite3-docs]
 
-[sqlcipher-api]: http://sqlcipher.net/sqlcipher-api/ "SQLCipher API"
+[sqlcipher-api]: https://sqlcipher.net/sqlcipher-api/ "SQLCipher API"
+[wxsqlite3]: http://wxcode.sourceforge.net/components/wxsqlite3/ "wxSQLite3 Homepage"
 [wxsqlite3-source]: http://wxcode.sourceforge.net/components/wxsqlite3/ "wxSQLite3 Source Code"
 [wxsqlite3-docs]: http://wxcode.sourceforge.net/docs/wxsqlite3/ "wxSQLite3 Docs"
-[wxsqlite3-dl]: http://sourceforge.net/projects/wxcode/files/Components/wxSQLite3/ "wxSQLite3 Download"
+[wxsqlite3-dl]: https://sourceforge.net/projects/wxcode/files/Components/wxSQLite3/ "wxSQLite3 Download"
 [repo-dl]: https://github.com/rindeal/SQLite3-Encryption/archive/master.zip "Download repository"
