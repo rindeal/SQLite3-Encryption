@@ -10,21 +10,6 @@ What?
 
 _\*Support for 256 bit AES encryption is still experimental_
 
-### What can be built with this solution?
-> sqlite3-x{86, 64}.{dll, lib, exe} - ({128, 256}-bit AES)
-
-##### Dynamically linked library
-- sqlite3.dll (128/256-bit AES)
-- sqlite3-x64.dll (128/256-bit AES)
-
-##### Statically linked library
-- sqlite3.lib (128/256-bit AES)
-- sqlite3-x64.lib (128/256-bit AES)
-
-##### Command line shell
-- sqlite3.exe (128/256-bit AES)
-- sqlite3-x64.exe (128/256-bit AES)
-
 How to?
 -----
 
