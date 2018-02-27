@@ -1,0 +1,36 @@
+image:
+  - Visual Studio 2015
+before_build:
+  - cmd: del SQLite3.sln
+  - cmd: premake.bat
+  
+platform:
+  - Win32
+#  - x64
+
+configuration: 
+  - Release_AES256
+#  - Debug_AES256
+#  - Debug_AES128
+#  - Release_AES128
+  
+after_build:
+  - cmd: dir /a *
+  - cmd: 7z a SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\sqlite3_dll\%CONFIGURATION%\*.dll
+  - cmd: 7z a SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\sqlite3_lib\%CONFIGURATION%\*.lib
+  - cmd: 7z a SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\sqlite3_shell\%CONFIGURATION%\*.exe
+  - cmd: dir /a
+  - cmd: rename SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%.zip SQLite3-Encryption.zip
+  - ps: Push-AppveyorArtifact SQLite3-Encryption.zip
+
+deploy:
+   release: SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%
+   description: "Add Encrypt func to sqlite3 shell"
+   provider: GitHub
+   auth_token:
+    secure: YiRkHuWnabCRwdYGhwkPZRSUJmVb/UeKn3YEQ+0mLTfIsGKrVUfDKdObe/MsYf1A
+   draft: false
+   prerelease: false
+   on:
+      branch: master
+   appveyor_repo_tag: true
