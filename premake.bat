@@ -1,2 +1,2 @@
 @echo off
-"%~dp0premake4" %*
+"%~dp0premake5" %*

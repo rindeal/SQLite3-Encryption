@@ -1,7 +1,6 @@
 image:
   - Visual Studio 2015
 before_build:
-  - cmd: del SQLite3.sln
   - cmd: premake.bat
   
 platform:

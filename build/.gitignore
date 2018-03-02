@@ -6,6 +6,9 @@
 *.suo
 *.user
 *.sln.docstates
+*.sln
+*.vcxproj
+*.filters
 
 !premake4.exe
 !.gitignore

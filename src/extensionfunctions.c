@@ -106,17 +106,23 @@ Original code 2006 June 05 by relicoder.
 
 */
 
-//#include "config.h"
+/* #include "config.h" */
 
-//#define COMPILE_SQLITE_EXTENSIONS_AS_LOADABLE_MODULE 1
-//#define HAVE_ACOSH 1
-//#define HAVE_ASINH 1
-//#define HAVE_ATANH 1
+/* #define COMPILE_SQLITE_EXTENSIONS_AS_LOADABLE_MODULE 1 */
+#if defined(_MSC_VER) && _MSC_VER <= 1700
+#else
+#define HAVE_ACOSH 1
+#define HAVE_ASINH 1
+#define HAVE_ATANH 1
+#endif
 #define HAVE_SINH 1
 #define HAVE_COSH 1
 #define HAVE_TANH 1
 #define HAVE_LOG10 1
-//#define HAVE_ISBLANK 1
+#if defined(_MSC_VER) && _MSC_VER <= 1700
+#else
+#define HAVE_ISBLANK 1
+#endif
 #define SQLITE_SOUNDEX 1
 #define HAVE_TRIM 1		/* LMH 2007-03-25 if sqlite has trim functions */
 
@@ -140,6 +146,7 @@ SQLITE_EXTENSION_INIT1
 #ifndef _MAP_H_
 #define _MAP_H_
 
+#if 0
 #if !defined(SQLITE_OS_WIN) || !defined(_MSC_VER)
 #include <stdint.h>
 #else
@@ -152,6 +159,7 @@ typedef unsigned long int uint32_t;
 typedef signed __int64 int64_t;
 typedef unsigned __int64 uint64_t;
 #endif
+#endif
 
 /*
 ** Simple binary tree implementation to use in median, mode and quartile calculations
@@ -159,13 +167,13 @@ typedef unsigned __int64 uint64_t;
 */
 
 typedef int(*cmp_func)(const void *, const void *);
-typedef void(*map_iterator)(void*, int64_t, void*);
+typedef void(*map_iterator)(void*, i64, void*);
 
 typedef struct node{
   struct node *l;
   struct node *r;
   void* data;
-  int64_t count;
+  i64   count;
 } node;
 
 typedef struct map{
@@ -207,10 +215,6 @@ int int_cmp(const void *a, const void *b);
 int double_cmp(const void *a, const void *b);
 
 #endif /* _MAP_H_ */
-
-typedef uint8_t         u8;
-//typedef uint16_t        u16;
-typedef int64_t         i64;
 
 static char *sqlite3StrDup( const char *z ) {
     char *res = sqlite3_malloc( strlen(z)+1 );
@@ -1246,11 +1250,13 @@ static void trimFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** All lengths in bytes.
 ** This is just an auxiliary function
 */
-// static void _append(char **s1, int l1, const char *s2, int l2){
-//   *s1 = realloc(*s1, (l1+l2+1)*sizeof(char));
-//   strncpy((*s1)+l1, s2, l2);
-//   *(*(s1)+l1+l2) = '\0';
-// }
+#if 0
+static void _append(char **s1, int l1, const char *s2, int l2){
+  *s1 = realloc(*s1, (l1+l2+1)*sizeof(char));
+  strncpy((*s1)+l1, s2, l2);
+  *(*(s1)+l1+l2) = '\0';
+}
+#endif
 
 #ifndef HAVE_TRIM
 
@@ -1817,7 +1823,7 @@ int RegisterExtensionFunctions(sqlite3 *db){
       case 1: pArg = db; break;
       case 2: pArg = (void *)(-1); break;
     }
-    //sqlite3CreateFunc
+    /* sqlite3CreateFunc */
     /* LMH no error checking */
     sqlite3_create_function(db, aFuncs[i].zName, aFuncs[i].nArg,
         aFuncs[i].eTextRep, pArg, aFuncs[i].xFunc, 0, 0);
@@ -1838,7 +1844,7 @@ int RegisterExtensionFunctions(sqlite3 *db){
       case 1: pArg = db; break;
       case 2: pArg = (void *)(-1); break;
     }
-    //sqlite3CreateFunc
+    /* sqlite3CreateFunc */
     /* LMH no error checking */
     sqlite3_create_function(db, aAggs[i].zName, aAggs[i].nArg, SQLITE_UTF8, 
         pArg, 0, aAggs[i].xStep, aAggs[i].xFinalize);
@@ -1938,8 +1944,8 @@ void map_destroy(map *m){
 }
 
 int int_cmp(const void *a, const void *b){
-  int64_t aa = *(int64_t *)(a);
-  int64_t bb = *(int64_t *)(b);
+  i64 aa = *(i64 *)(a);
+  i64 bb = *(i64 *)(b);
   /* printf("cmp %d <=> %d\n",aa,bb); */
   if(aa==bb)
     return 0;
@@ -1961,7 +1967,7 @@ int double_cmp(const void *a, const void *b){
     return 1;
 }
 
-void print_elem(void *e, int64_t c, void* p){
+void print_elem(void *e, i64 c, void* p){
   int ee = *(int*)(e);
   printf("%d => %lld\n", ee,c);
 }
