@@ -215,6 +215,14 @@ static void setTextMode(FILE *file, int isOutput){
 /* True if the timer is enabled */
 static int enableTimer = 0;
 
+#ifdef SQLITE_HAS_CODEC
+/* Database encryption support
+* Types were defined according to sqlite3_key() prototype.
+*/
+static void *encryption_key = NULL;
+static int encryption_key_length = 0;
+#endif
+
 /* Return the current wall-clock time */
 static sqlite3_int64 timeOfDay(void){
   static sqlite3_vfs *clockVfs = 0;
@@ -10369,6 +10377,14 @@ static void open_db(ShellState *p, int keepAlive){
       }
     }
     globalDb = p->db;
+
+#ifdef SQLITE_HAS_CODEC
+	if (encryption_key != NULL) {
+		sqlite3_activate_see("7bb07b8d471d642e");
+		sqlite3_key(p->db, encryption_key, encryption_key_length);
+	}
+#endif
+
     if( p->db==0 || SQLITE_OK!=sqlite3_errcode(p->db) ){
       utf8_printf(stderr,"Error: unable to open database \"%s\": %s\n",
           p->zDbFilename, sqlite3_errmsg(p->db));
@@ -14883,6 +14899,9 @@ static const char zOptions[] =
 #ifdef SQLITE_ENABLE_VFSTRACE
   "   -vfstrace            enable tracing of all VFS calls\n"
 #endif
+#ifdef SQLITE_HAS_CODEC
+	"   -key hexvalue        set encryption key (hexadecimal, no quotes)\n"
+#endif
 ;
 static void usage(int showDetail){
   utf8_printf(stderr,
@@ -14956,7 +14975,7 @@ static char *cmdline_option_value(int argc, char **argv, int i){
 #  endif
 #endif
 
-#if SQLITE_SHELL_IS_UTF8
+#ifdef SQLITE_SHELL_IS_UTF8
 int SQLITE_CDECL main(int argc, char **argv){
 #else
 int SQLITE_CDECL wmain(int argc, wchar_t **wargv){
@@ -15125,7 +15144,55 @@ int SQLITE_CDECL wmain(int argc, wchar_t **wargv){
 #endif
     }else if( strcmp(z,"-append")==0 ){
       data.openMode = SHELL_OPEN_APPENDVFS;
-    }
+    } else if (strcmp(argv[i], "-key") == 0) {
+#ifdef SQLITE_HAS_CODEC
+	/* Process hex key from command-line.
+	** Message to SQLite developers: your parsers are NOT robust!
+	*/
+	unsigned int idx;
+	unsigned int tmpLength;
+
+	i++;
+	/* compute key length */
+	idx = i;
+	while ((argv[i][idx] != ' ') && (argv[i][idx] != '\x00')) {
+		char c = (argv[i][idx]);
+		if (!((isdigit(c)) || ((c >= 'a') && (c <= 'f')) || ((c >= 'A') && (c <= 'F')))) {
+			fprintf(stderr, "Expecting hexadecimal values for encryption key!\r\n");
+			return 1;
+		}
+		idx++;
+	}
+	tmpLength = idx;
+	if ((tmpLength % 2) != 0) {
+		fprintf(stderr, "Expecting an even number of characters for encryption key!\r\n");
+		return 1;
+	}
+
+	/* allocate key memory */
+	encryption_key_length = tmpLength / 2;
+	encryption_key = malloc(encryption_key_length);
+	if (encryption_key == NULL) {
+		fprintf(stderr, "Out of memory!\r\n");
+		return 1;
+	}
+
+	/* convert hex string into values */
+	idx = 0;
+	while ((argv[i][idx] != ' ') && (argv[i][idx] != '\x00')) {
+		char hex[3];
+		hex[0] = (argv[i][idx++]);
+		hex[1] = (argv[i][idx++]);
+		hex[2] = '\x00';
+
+		((unsigned char*)encryption_key)[(idx - 2) / 2] = (unsigned char)(0xFF & strtoul(hex, NULL, 16));
+	}
+#else
+	fprintf(stderr, "Sorry, encryption support is not available\r\n");
+	fprintf(stderr, "HINT: define 'SQLITE_HAS_CODEC' at compile time\r\n");
+	return 1;
+#endif
+   }
   }
   if( data.zDbFilename==0 ){
 #ifndef SQLITE_OMIT_MEMORYDB
@@ -15270,6 +15337,11 @@ int SQLITE_CDECL wmain(int argc, wchar_t **wargv){
           if( bail_on_error ) return rc;
         }
       }
+#ifdef SQLITE_HAS_CODEC
+	} else if (strcmp(z, "-key") == 0) {
+		/* encryption key has already been set */
+		i++;
+#endif
     }else{
       utf8_printf(stderr,"%s: Error: unknown option: %s\n", Argv0, z);
       raw_printf(stderr,"Use -help for a list of options.\n");
@@ -15355,5 +15427,13 @@ int SQLITE_CDECL wmain(int argc, wchar_t **wargv){
   for(i=0; i<argc; i++) sqlite3_free(argv[i]);
   sqlite3_free(argv);
 #endif
+
+#ifdef SQLITE_HAS_CODEC
+  if (encryption_key != NULL) {
+	  free(encryption_key);
+	  encryption_key = NULL;
+  }
+#endif
+
   return rc;
 }
