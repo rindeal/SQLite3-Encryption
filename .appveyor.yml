@@ -29,3 +29,11 @@ deploy:
    on:
       branch: master
    appveyor_repo_tag: false
+
+on_success:
+- ps: >-
+    if ($true)
+
+    {
+      Write-Host "Success"
+    }
