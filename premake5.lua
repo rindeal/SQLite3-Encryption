@@ -17,6 +17,9 @@ PRJ_NAME_LIB_ICU    = "sqlite3_lib_icu"
 PRJ_NAME_DLL_ICU    = "sqlite3_dll_icu"
 PRJ_NAME_SHELL_ICU  = "sqlite3_shell_icu"
 
+-- set default action
+if _ACTION == nil then _ACTION = "vs2015" end
+
 newoption {
   trigger     = "builddir",
   value       = "build",
@@ -24,6 +27,25 @@ newoption {
 }
 
 BUILDDIR = _OPTIONS["builddir"] or "build"
+
+-- hook for the clean action
+if _ACTION == "clean" then
+  os.rmdir("bin")
+  os.rmdir("build")
+  -- os.execute('for /d %d in ('..SRC_DIR..'\\*.tlog) do rd /q /s "%d"')
+  -- os.execute('del /Q /S /F /A *Log.htm thumbs.db *bak.def 2> NUL')
+  extensions = {
+    --[["dll",]] --[["lib",]] "exe",
+    "pdb", --[["exp",]] "obj", "manifest",
+    "sln", "suo", "sdf", "opensdf",
+    "bak", "tmp", "log", "tlog",
+  }
+  os.execute('@echo off && for %e in ('.. table.concat(extensions," ") ..') do del /Q /S /F /A *.%e 2> NUL')
+  -- remove empty directories
+  -- http://blogs.msdn.com/b/oldnewthing/archive/2008/04/17/8399914.aspx
+  -- os.execute('@echo off && for /f "usebackq" %d in (`"dir /ad/b/s | sort /R"`) do rd "%d" 2> NUL ')
+  -- os.exit() -- don NOT exit and let the native premake clean action run
+end
 
 workspace "SQLite3"
   configurations { "Debug_AES128", "Release_AES128", "Debug_AES256", "Release_AES256" }
