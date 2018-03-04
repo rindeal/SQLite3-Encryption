@@ -14,17 +14,13 @@ configuration:
 #  - Release_AES128
   
 after_build:
-  - cmd: dir /a *
-  - cmd: 7z a SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\sqlite3_dll\%CONFIGURATION%\*.dll
-  - cmd: 7z a SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\sqlite3_lib\%CONFIGURATION%\*.lib
-  - cmd: 7z a SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\sqlite3_shell\%CONFIGURATION%\*.exe
-  - cmd: dir /a
+  - cmd: 7z a -tzip SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%.zip bin/ -xr@x_fn.txt
   - cmd: rename SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%.zip SQLite3-Encryption.zip
   - ps: Push-AppveyorArtifact SQLite3-Encryption.zip
 
 deploy:
    release: SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%
-   description: "Add Encrypt func to sqlite3 shell"
+   description: "update sqlite3 to v3.22.0"
    provider: GitHub
    auth_token:
     secure: YiRkHuWnabCRwdYGhwkPZRSUJmVb/UeKn3YEQ+0mLTfIsGKrVUfDKdObe/MsYf1A
