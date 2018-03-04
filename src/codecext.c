@@ -17,6 +17,7 @@ void sqlite3CodecFree(void *pCodecArg)
   {
     CodecTerm(pCodecArg);
     sqlite3_free(pCodecArg);
+    pCodecArg = NULL;
   }
 }
 
@@ -132,8 +133,13 @@ int sqlite3CodecAttach(sqlite3* db, int nDb, const void* zKey, int nKey)
       else
       {
         CodecSetIsEncrypted(codec, 0);
-        sqlite3_free(codec);
+        sqlite3CodecFree(codec);
       }
+    }
+    else
+    {
+      CodecSetIsEncrypted(codec, 0);
+      sqlite3CodecFree(codec);
     }
   }
   else
@@ -188,7 +194,11 @@ static int dbFindIndex(sqlite3* db, const char* zDb)
     for (index = 0; found == 0 && index < db->nDb; ++index)
     {
       struct Db* pDb = &db->aDb[index];
+#if (SQLITE_VERSION_NUMBER >= 3015000)
+      if (strcmp(pDb->zDbSName, zDb) == 0)
+#else
       if (strcmp(pDb->zName, zDb) == 0)
+#endif
       {
         found = 1;
         dbIndex = index;
@@ -312,7 +322,9 @@ int sqlite3_rekey_v2(sqlite3 *db, const char *zDbName, const void *zKey, int nKe
     for (n = 1; rc == SQLITE_OK && n <= nPage; n++)
     {
       if (n == nSkip) continue;
-#if (SQLITE_VERSION_NUMBER >= 3003014)
+#if (SQLITE_VERSION_NUMBER >= 3010000)
+      rc = sqlite3PagerGet(pPager, n, &pPage, 0);
+#elif (SQLITE_VERSION_NUMBER >= 3003014)
       rc = sqlite3PagerGet(pPager, n, &pPage);
 #else
       rc = sqlite3pager_get(pPager, n, &pPage);

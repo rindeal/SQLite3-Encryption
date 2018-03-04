@@ -164,6 +164,12 @@ rekey with null   // <-- db is now fully decrypted to plain text
 use as usual
 ```
 
+### SQLite shell 
+```bash
+$sqlite3 -key 2a443024e test.db
+ -key hexvalue        set encryption key (hexadecimal, no quotes)
+```
+
 ----------
 ## Read more
 - [sqlcipher-api]

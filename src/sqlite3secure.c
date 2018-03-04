@@ -1,11 +1,29 @@
-// To enable the extension functions define SQLITE_ENABLE_EXTFUNC on compiling this module
-#ifdef SQLITE_ENABLE_EXTFUNC
+/*
+** Enable SQLite debug assertions if requested
+*/
+#ifndef SQLITE_DEBUG
+#if defined(SQLITE_ENABLE_DEBUG) && (SQLITE_ENABLE_DEBUG == 1)
+#define SQLITE_DEBUG 1
+#endif
+#endif
+
+/*
+** To enable the extension functions define SQLITE_ENABLE_EXTFUNC on compiling this module
+** To enable the reading CSV files define SQLITE_ENABLE_CSV on compiling this module
+** To enable the SHA3 support define SQLITE_ENABLE_SHA3 on compiling this module
+** To enable the CARRAY support define SQLITE_ENABLE_CARRAY on compiling this module
+** To enable the FILEIO support define SQLITE_ENABLE_FILEIO on compiling this module
+** To enable the SERIES support define SQLITE_ENABLE_SERIES on compiling this module
+*/
+#if defined(SQLITE_ENABLE_EXTFUNC) || defined(SQLITE_ENABLE_CSV) || defined(SQLITE_ENABLE_SHA3) || defined(SQLITE_ENABLE_CARRAY) || defined(SQLITE_ENABLE_FILEIO) || defined(SQLITE_ENABLE_SERIES)
 #define sqlite3_open    sqlite3_open_internal
 #define sqlite3_open16  sqlite3_open16_internal
 #define sqlite3_open_v2 sqlite3_open_v2_internal
 #endif
 
-// Enable the user authentication feature
+/*
+** Enable the user authentication feature
+*/
 #ifndef SQLITE_USER_AUTHENTICATION
 #define SQLITE_USER_AUTHENTICATION 1
 #endif
@@ -17,7 +35,7 @@
 #include "userauth.c"
 #endif
 
-#ifdef SQLITE_ENABLE_EXTFUNC
+#if defined(SQLITE_ENABLE_EXTFUNC) || defined(SQLITE_ENABLE_CSV) || defined(SQLITE_ENABLE_SHA3) || defined(SQLITE_ENABLE_CARRAY) || defined(SQLITE_ENABLE_FILEIO) || defined(SQLITE_ENABLE_SERIES)
 #undef sqlite3_open
 #undef sqlite3_open16
 #undef sqlite3_open_v2
@@ -63,9 +81,86 @@ void mySqlite3PagerSetCodec(
 
 #endif
 
+/*
+** Extension functions
+*/
 #ifdef SQLITE_ENABLE_EXTFUNC
-
 #include "extensionfunctions.c"
+#endif
+
+/*
+** CSV import
+*/
+#ifdef SQLITE_ENABLE_CSV
+#include "csv.c"
+#endif
+
+/*
+** SHA3
+*/
+#ifdef SQLITE_ENABLE_SHA3
+#include "shathree.c"
+#endif
+
+/*
+** CARRAY
+*/
+#ifdef SQLITE_ENABLE_CARRAY
+#include "carray.c"
+#endif
+
+/*
+** FILEIO
+*/
+#ifdef SQLITE_ENABLE_FILEIO
+
+/* MinGW specifics */
+#if (!defined(_WIN32) && !defined(WIN32)) || defined(__MINGW32__)
+# include <unistd.h>
+# include <dirent.h>
+# if defined(__MINGW32__)
+#  define DIRENT dirent
+#  ifndef S_ISLNK
+#   define S_ISLNK(mode) (0)
+#  endif
+# endif
+#endif
+
+#include "test_windirent.c"
+#include "fileio.c"
+#endif
+
+/*
+** SERIES
+*/
+#ifdef SQLITE_ENABLE_SERIES
+#include "series.c"
+#endif
+
+#if defined(SQLITE_ENABLE_EXTFUNC) || defined(SQLITE_ENABLE_CSV) || defined(SQLITE_ENABLE_SHA3) || defined(SQLITE_ENABLE_CARRAY) || defined(SQLITE_ENABLE_FILEIO) || defined(SQLITE_ENABLE_SERIES)
+
+static
+void registerAllExtensions(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi)
+{
+#ifdef SQLITE_ENABLE_EXTFUNC
+    RegisterExtensionFunctions(db);
+#endif
+#ifdef SQLITE_ENABLE_CSV
+    sqlite3_csv_init(db, NULL, NULL);
+#endif
+#ifdef SQLITE_ENABLE_SHA3
+    sqlite3_shathree_init(db, NULL, NULL);
+#endif
+#ifdef SQLITE_ENABLE_CARRAY
+    sqlite3_carray_init(db, NULL, NULL);
+#endif
+#ifdef SQLITE_ENABLE_FILEIO
+    sqlite3_fileio_init(db, NULL, NULL);
+#endif
+#ifdef SQLITE_ENABLE_SERIES
+    sqlite3_series_init(db, NULL, NULL);
+#endif
+}
 
 SQLITE_API int sqlite3_open(
   const char *filename,   /* Database filename (UTF-8) */
@@ -75,7 +170,7 @@ SQLITE_API int sqlite3_open(
   int ret = sqlite3_open_internal(filename, ppDb);
   if (ret == 0)
   {
-    RegisterExtensionFunctions(*ppDb);
+    registerAllExtensions(*ppDb, NULL, NULL);
   }
   return ret;
 }
@@ -88,7 +183,7 @@ SQLITE_API int sqlite3_open16(
   int ret = sqlite3_open16_internal(filename, ppDb);
   if (ret == 0)
   {
-    RegisterExtensionFunctions(*ppDb);
+    registerAllExtensions(*ppDb, NULL, NULL);
   }
   return ret;
 }
@@ -103,7 +198,7 @@ SQLITE_API int sqlite3_open_v2(
   int ret = sqlite3_open_v2_internal(filename, ppDb, flags, zVfs);
   if (ret == 0)
   {
-    RegisterExtensionFunctions(*ppDb);
+    registerAllExtensions(*ppDb, NULL, NULL);
   }
   return ret;
 }
