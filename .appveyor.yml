@@ -5,7 +5,7 @@ before_build:
   
 platform:
   - Win32
-#  - x64
+  - x64
 
 configuration: 
   - Release_AES256
@@ -14,9 +14,8 @@ configuration:
 #  - Release_AES128
   
 after_build:
-  - cmd: 7z a -tzip SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%.zip bin/ -xr@x_fn.txt
-  - cmd: rename SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%.zip SQLite3-Encryption.zip
-  - ps: Push-AppveyorArtifact SQLite3-Encryption.zip
+  - cmd: 7z a -tzip SQLite3-Encryption_%platform%-v%APPVEYOR_BUILD_VERSION%.zip bin/ -xr@x_fn.txt
+  - ps: Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
 
 deploy:
    release: SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%
