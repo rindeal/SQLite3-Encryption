@@ -50,7 +50,7 @@ end
 workspace "SQLite3"
   configurations { "Debug_AES128", "Release_AES128", "Debug_AES256", "Release_AES256" }
   platforms { "Win32", "x64" }
-  targetdir "bin/$(ProjectName)/$(Configuration)"
+  targetdir "bin/$(Platform)/$(ProjectName)/$(Configuration)"
 --  location(BUILDDIR)
 
   defines {
@@ -138,16 +138,6 @@ project (PRJ_NAME_LIB)
       "CODEC_TYPE=CODEC_TYPE_AES256"
     }
 
-  -- Target directory
-  filter { "configurations:Debug_AES128" }
-    targetdir "bin/aes128/lib/debug"
-  filter { "configurations:Debug_AES256" }
-    targetdir "bin/aes256/lib/debug"
-  filter { "configurations:Release_AES128" }
-    targetdir "bin/aes128/lib/release"
-  filter { "configurations:Release_AES256" }
-    targetdir "bin/aes256/lib/release"
-
 -- SQLite3 shared library
 project (PRJ_NAME_DLL)
   language "C++"
@@ -200,15 +190,6 @@ project (PRJ_NAME_DLL)
       "CODEC_TYPE=CODEC_TYPE_AES256"
     }
 
-  -- Target directory
-  filter { "configurations:Debug_AES128" }
-    targetdir "bin/aes128/dll/debug"
-  filter { "configurations:Debug_AES256" }
-    targetdir "bin/aes256/dll/debug"
-  filter { "configurations:Release_AES128" }
-    targetdir "bin/aes128/dll/release"
-  filter { "configurations:Release_AES256" }
-    targetdir "bin/aes256/dll/release"
 
 -- SQLite3 Shell    
 project (PRJ_NAME_SHELL)
@@ -231,16 +212,6 @@ project (PRJ_NAME_SHELL)
     "SQLITE_HAS_CODEC=1",
     "SQLITE_USER_AUTHENTICATION"
   }
-
-  -- Target directory
-  filter { "configurations:Debug_AES128" }
-    targetdir "bin/aes128/lib/debug"
-  filter { "configurations:Debug_AES256" }
-    targetdir "bin/aes256/lib/debug"
-  filter { "configurations:Release_AES128" }
-    targetdir "bin/aes128/lib/release"
-  filter { "configurations:Release_AES256" }
-    targetdir "bin/aes256/lib/release"
 
 
 -- ICU support
@@ -298,15 +269,6 @@ project (PRJ_NAME_LIB_ICU)
       "CODEC_TYPE=CODEC_TYPE_AES256"
     }
 
-  -- Target directory
-  filter { "configurations:Debug_AES128" }
-    targetdir "bin/aes128/lib/debug"
-  filter { "configurations:Debug_AES256" }
-    targetdir "bin/aes256/lib/debug"
-  filter { "configurations:Release_AES128" }
-    targetdir "bin/aes128/lib/release"
-  filter { "configurations:Release_AES256" }
-    targetdir "bin/aes256/lib/release"
 
 -- SQLite3 shared library with ICU support
 project (PRJ_NAME_DLL_ICU)
@@ -378,15 +340,6 @@ project (PRJ_NAME_DLL_ICU)
       "CODEC_TYPE=CODEC_TYPE_AES256"
     }
 
-  -- Target directory
-  filter { "configurations:Debug_AES128" }
-    targetdir "bin/aes128/dll/debug"
-  filter { "configurations:Debug_AES256" }
-    targetdir "bin/aes256/dll/debug"
-  filter { "configurations:Release_AES128" }
-    targetdir "bin/aes128/dll/release"
-  filter { "configurations:Release_AES256" }
-    targetdir "bin/aes256/dll/release"
 
 -- SQLite3 Shell with ICU support   
 project (PRJ_NAME_SHELL_ICU)
@@ -421,13 +374,3 @@ project (PRJ_NAME_SHELL_ICU)
     "SQLITE_HAS_CODEC=1",
     "SQLITE_USER_AUTHENTICATION"
   }
-
-  -- Target directory
-  filter { "configurations:Debug_AES128" }
-    targetdir "bin/aes128/lib/debug"
-  filter { "configurations:Debug_AES256" }
-    targetdir "bin/aes256/lib/debug"
-  filter { "configurations:Release_AES128" }
-    targetdir "bin/aes128/lib/release"
-  filter { "configurations:Release_AES256" }
-    targetdir "bin/aes256/lib/release"
