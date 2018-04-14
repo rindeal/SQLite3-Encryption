@@ -223,6 +223,14 @@ static void setTextMode(FILE *file, int isOutput){
 /* True if the timer is enabled */
 static int enableTimer = 0;
 
+#ifdef SQLITE_HAS_CODEC
+/* Database encryption support
+* Types were defined according to sqlite3_key() prototype.
+*/
+static void *encryption_key = NULL;
+static int encryption_key_length = 0;
+#endif
+
 /* Return the current wall-clock time */
 static sqlite3_int64 timeOfDay(void){
   static sqlite3_vfs *clockVfs = 0;
@@ -11038,6 +11046,14 @@ static void open_db(ShellState *p, int keepAlive){
       }
     }
     globalDb = p->db;
+
+#ifdef SQLITE_HAS_CODEC
+	if (encryption_key != NULL) {
+		sqlite3_activate_see("7bb07b8d471d642e");
+		sqlite3_key(p->db, encryption_key, encryption_key_length);
+	}
+#endif
+
     if( p->db==0 || SQLITE_OK!=sqlite3_errcode(p->db) ){
       utf8_printf(stderr,"Error: unable to open database \"%s\": %s\n",
           p->zDbFilename, sqlite3_errmsg(p->db));
@@ -15611,6 +15627,9 @@ static const char zOptions[] =
 #ifdef SQLITE_ENABLE_VFSTRACE
   "   -vfstrace            enable tracing of all VFS calls\n"
 #endif
+#ifdef SQLITE_HAS_CODEC
+	"   -key hexvalue        set encryption key (hexadecimal, no quotes)\n"
+#endif
 #ifdef SQLITE_HAVE_ZLIB
   "   -zip                 open the file as a ZIP Archive\n"
 #endif
@@ -15688,201 +15707,267 @@ static char *cmdline_option_value(int argc, char **argv, int i){
 #endif
 
 #if SQLITE_SHELL_IS_UTF8
-int SQLITE_CDECL main(int argc, char **argv){
+int SQLITE_CDECL main(int argc, char **argv) {
 #else
-int SQLITE_CDECL wmain(int argc, wchar_t **wargv){
-  char **argv;
+int SQLITE_CDECL wmain(int argc, wchar_t **wargv) {
+	char **argv;
 #endif
-  char *zErrMsg = 0;
-  ShellState data;
-  const char *zInitFile = 0;
-  int i;
-  int rc = 0;
-  int warnInmemoryDb = 0;
-  int readStdin = 1;
-  int nCmd = 0;
-  char **azCmd = 0;
+	char *zErrMsg = 0;
+	ShellState data;
+	const char *zInitFile = 0;
+	int i;
+	int rc = 0;
+	int warnInmemoryDb = 0;
+	int readStdin = 1;
+	int nCmd = 0;
+	char **azCmd = 0;
 
-  setBinaryMode(stdin, 0);
-  setvbuf(stderr, 0, _IONBF, 0); /* Make sure stderr is unbuffered */
-  stdin_is_interactive = isatty(0);
-  stdout_is_console = isatty(1);
+	setBinaryMode(stdin, 0);
+	setvbuf(stderr, 0, _IONBF, 0); /* Make sure stderr is unbuffered */
+	stdin_is_interactive = isatty(0);
+	stdout_is_console = isatty(1);
 
 #if USE_SYSTEM_SQLITE+0!=1
-  if( strncmp(sqlite3_sourceid(),SQLITE_SOURCE_ID,60)!=0 ){
-    utf8_printf(stderr, "SQLite header and source version mismatch\n%s\n%s\n",
-            sqlite3_sourceid(), SQLITE_SOURCE_ID);
-    exit(1);
-  }
+	if (strncmp(sqlite3_sourceid(), SQLITE_SOURCE_ID, 60) != 0) {
+		utf8_printf(stderr, "SQLite header and source version mismatch\n%s\n%s\n",
+			sqlite3_sourceid(), SQLITE_SOURCE_ID);
+		exit(1);
+	}
 #endif
-  main_init(&data);
+	main_init(&data);
 
-  /* On Windows, we must translate command-line arguments into UTF-8.
-  ** The SQLite memory allocator subsystem has to be enabled in order to
-  ** do this.  But we want to run an sqlite3_shutdown() afterwards so that
-  ** subsequent sqlite3_config() calls will work.  So copy all results into
-  ** memory that does not come from the SQLite memory allocator.
-  */
+	/* On Windows, we must translate command-line arguments into UTF-8.
+	** The SQLite memory allocator subsystem has to be enabled in order to
+	** do this.  But we want to run an sqlite3_shutdown() afterwards so that
+	** subsequent sqlite3_config() calls will work.  So copy all results into
+	** memory that does not come from the SQLite memory allocator.
+	*/
 #if !SQLITE_SHELL_IS_UTF8
-  sqlite3_initialize();
-  argv = malloc(sizeof(argv[0])*argc);
-  if( argv==0 ){
-    raw_printf(stderr, "out of memory\n");
-    exit(1);
-  }
-  for(i=0; i<argc; i++){
-    char *z = sqlite3_win32_unicode_to_utf8(wargv[i]);
-    int n;
-    if( z==0 ){
-      raw_printf(stderr, "out of memory\n");
-      exit(1);
-    }
-    n = (int)strlen(z);
-    argv[i] = malloc( n+1 );
-    if( argv[i]==0 ){
-      raw_printf(stderr, "out of memory\n");
-      exit(1);
-    }
-    memcpy(argv[i], z, n+1);
-    sqlite3_free(z);
-  }
-  sqlite3_shutdown();
+	sqlite3_initialize();
+	argv = malloc(sizeof(argv[0])*argc);
+	if (argv == 0) {
+		raw_printf(stderr, "out of memory\n");
+		exit(1);
+	}
+	for (i = 0; i < argc; i++) {
+		char *z = sqlite3_win32_unicode_to_utf8(wargv[i]);
+		int n;
+		if (z == 0) {
+			raw_printf(stderr, "out of memory\n");
+			exit(1);
+		}
+		n = (int)strlen(z);
+		argv[i] = malloc(n + 1);
+		if (argv[i] == 0) {
+			raw_printf(stderr, "out of memory\n");
+			exit(1);
+		}
+		memcpy(argv[i], z, n + 1);
+		sqlite3_free(z);
+	}
+	sqlite3_shutdown();
 #endif
 
-  assert( argc>=1 && argv && argv[0] );
-  Argv0 = argv[0];
+	assert(argc >= 1 && argv && argv[0]);
+	Argv0 = argv[0];
 
-  /* Make sure we have a valid signal handler early, before anything
-  ** else is done.
-  */
+	/* Make sure we have a valid signal handler early, before anything
+	** else is done.
+	*/
 #ifdef SIGINT
-  signal(SIGINT, interrupt_handler);
+	signal(SIGINT, interrupt_handler);
 #elif (defined(_WIN32) || defined(WIN32)) && !defined(_WIN32_WCE)
-  SetConsoleCtrlHandler(ConsoleCtrlHandler, TRUE);
+	SetConsoleCtrlHandler(ConsoleCtrlHandler, TRUE);
 #endif
 
 #ifdef SQLITE_SHELL_DBNAME_PROC
-  {
-    /* If the SQLITE_SHELL_DBNAME_PROC macro is defined, then it is the name
-    ** of a C-function that will provide the name of the database file.  Use
-    ** this compile-time option to embed this shell program in larger
-    ** applications. */
-    extern void SQLITE_SHELL_DBNAME_PROC(const char**);
-    SQLITE_SHELL_DBNAME_PROC(&data.zDbFilename);
-    warnInmemoryDb = 0;
-  }
+	{
+		/* If the SQLITE_SHELL_DBNAME_PROC macro is defined, then it is the name
+		** of a C-function that will provide the name of the database file.  Use
+		** this compile-time option to embed this shell program in larger
+		** applications. */
+		extern void SQLITE_SHELL_DBNAME_PROC(const char**);
+		SQLITE_SHELL_DBNAME_PROC(&data.zDbFilename);
+		warnInmemoryDb = 0;
+	}
 #endif
 
-  /* Do an initial pass through the command-line argument to locate
-  ** the name of the database file, the name of the initialization file,
-  ** the size of the alternative malloc heap,
-  ** and the first command to execute.
-  */
-  for(i=1; i<argc; i++){
-    char *z;
-    z = argv[i];
-    if( z[0]!='-' ){
-      if( data.zDbFilename==0 ){
-        data.zDbFilename = z;
-      }else{
-        /* Excesss arguments are interpreted as SQL (or dot-commands) and
-        ** mean that nothing is read from stdin */
-        readStdin = 0;
-        nCmd++;
-        azCmd = realloc(azCmd, sizeof(azCmd[0])*nCmd);
-        if( azCmd==0 ){
-          raw_printf(stderr, "out of memory\n");
-          exit(1);
-        }
-        azCmd[nCmd-1] = z;
-      }
-    }
-    if( z[1]=='-' ) z++;
-    if( strcmp(z,"-separator")==0
-     || strcmp(z,"-nullvalue")==0
-     || strcmp(z,"-newline")==0
-     || strcmp(z,"-cmd")==0
-    ){
-      (void)cmdline_option_value(argc, argv, ++i);
-    }else if( strcmp(z,"-init")==0 ){
-      zInitFile = cmdline_option_value(argc, argv, ++i);
-    }else if( strcmp(z,"-batch")==0 ){
-      /* Need to check for batch mode here to so we can avoid printing
-      ** informational messages (like from process_sqliterc) before
-      ** we do the actual processing of arguments later in a second pass.
-      */
-      stdin_is_interactive = 0;
-    }else if( strcmp(z,"-heap")==0 ){
+	/* Do an initial pass through the command-line argument to locate
+	** the name of the database file, the name of the initialization file,
+	** the size of the alternative malloc heap,
+	** and the first command to execute.
+	*/
+	for (i = 1; i < argc; i++) {
+		char *z;
+		z = argv[i];
+		if (z[0] != '-') {
+			if (data.zDbFilename == 0) {
+				data.zDbFilename = z;
+			}
+			else {
+				/* Excesss arguments are interpreted as SQL (or dot-commands) and
+				** mean that nothing is read from stdin */
+				readStdin = 0;
+				nCmd++;
+				azCmd = realloc(azCmd, sizeof(azCmd[0])*nCmd);
+				if (azCmd == 0) {
+					raw_printf(stderr, "out of memory\n");
+					exit(1);
+				}
+				azCmd[nCmd - 1] = z;
+			}
+		}
+		if (z[1] == '-') z++;
+		if (strcmp(z, "-separator") == 0
+			|| strcmp(z, "-nullvalue") == 0
+			|| strcmp(z, "-newline") == 0
+			|| strcmp(z, "-cmd") == 0
+			) {
+			(void)cmdline_option_value(argc, argv, ++i);
+		}
+		else if (strcmp(z, "-init") == 0) {
+			zInitFile = cmdline_option_value(argc, argv, ++i);
+		}
+		else if (strcmp(z, "-batch") == 0) {
+			/* Need to check for batch mode here to so we can avoid printing
+			** informational messages (like from process_sqliterc) before
+			** we do the actual processing of arguments later in a second pass.
+			*/
+			stdin_is_interactive = 0;
+		}
+		else if (strcmp(z, "-heap") == 0) {
 #if defined(SQLITE_ENABLE_MEMSYS3) || defined(SQLITE_ENABLE_MEMSYS5)
-      const char *zSize;
-      sqlite3_int64 szHeap;
+			const char *zSize;
+			sqlite3_int64 szHeap;
 
-      zSize = cmdline_option_value(argc, argv, ++i);
-      szHeap = integerValue(zSize);
-      if( szHeap>0x7fff0000 ) szHeap = 0x7fff0000;
-      sqlite3_config(SQLITE_CONFIG_HEAP, malloc((int)szHeap), (int)szHeap, 64);
+			zSize = cmdline_option_value(argc, argv, ++i);
+			szHeap = integerValue(zSize);
+			if (szHeap > 0x7fff0000) szHeap = 0x7fff0000;
+			sqlite3_config(SQLITE_CONFIG_HEAP, malloc((int)szHeap), (int)szHeap, 64);
 #else
-      (void)cmdline_option_value(argc, argv, ++i);
+			(void)cmdline_option_value(argc, argv, ++i);
 #endif
-    }else if( strcmp(z,"-pagecache")==0 ){
-      int n, sz;
-      sz = (int)integerValue(cmdline_option_value(argc,argv,++i));
-      if( sz>70000 ) sz = 70000;
-      if( sz<0 ) sz = 0;
-      n = (int)integerValue(cmdline_option_value(argc,argv,++i));
-      sqlite3_config(SQLITE_CONFIG_PAGECACHE,
-                    (n>0 && sz>0) ? malloc(n*sz) : 0, sz, n);
-      data.shellFlgs |= SHFLG_Pagecache;
-    }else if( strcmp(z,"-lookaside")==0 ){
-      int n, sz;
-      sz = (int)integerValue(cmdline_option_value(argc,argv,++i));
-      if( sz<0 ) sz = 0;
-      n = (int)integerValue(cmdline_option_value(argc,argv,++i));
-      if( n<0 ) n = 0;
-      sqlite3_config(SQLITE_CONFIG_LOOKASIDE, sz, n);
-      if( sz*n==0 ) data.shellFlgs &= ~SHFLG_Lookaside;
+		}
+		else if (strcmp(z, "-pagecache") == 0) {
+			int n, sz;
+			sz = (int)integerValue(cmdline_option_value(argc, argv, ++i));
+			if (sz > 70000) sz = 70000;
+			if (sz < 0) sz = 0;
+			n = (int)integerValue(cmdline_option_value(argc, argv, ++i));
+			sqlite3_config(SQLITE_CONFIG_PAGECACHE,
+				(n > 0 && sz > 0) ? malloc(n*sz) : 0, sz, n);
+			data.shellFlgs |= SHFLG_Pagecache;
+		}
+		else if (strcmp(z, "-lookaside") == 0) {
+			int n, sz;
+			sz = (int)integerValue(cmdline_option_value(argc, argv, ++i));
+			if (sz < 0) sz = 0;
+			n = (int)integerValue(cmdline_option_value(argc, argv, ++i));
+			if (n < 0) n = 0;
+			sqlite3_config(SQLITE_CONFIG_LOOKASIDE, sz, n);
+			if (sz*n == 0) data.shellFlgs &= ~SHFLG_Lookaside;
 #ifdef SQLITE_ENABLE_VFSTRACE
-    }else if( strcmp(z,"-vfstrace")==0 ){
-      extern int vfstrace_register(
-         const char *zTraceName,
-         const char *zOldVfsName,
-         int (*xOut)(const char*,void*),
-         void *pOutArg,
-         int makeDefault
-      );
-      vfstrace_register("trace",0,(int(*)(const char*,void*))fputs,stderr,1);
+		}
+		else if (strcmp(z, "-vfstrace") == 0) {
+			extern int vfstrace_register(
+				const char *zTraceName,
+				const char *zOldVfsName,
+				int(*xOut)(const char*, void*),
+				void *pOutArg,
+				int makeDefault
+			);
+			vfstrace_register("trace", 0, (int(*)(const char*, void*))fputs, stderr, 1);
 #endif
 #ifdef SQLITE_ENABLE_MULTIPLEX
-    }else if( strcmp(z,"-multiplex")==0 ){
-      extern int sqlite3_multiple_initialize(const char*,int);
-      sqlite3_multiplex_initialize(0, 1);
+		}
+		else if (strcmp(z, "-multiplex") == 0) {
+			extern int sqlite3_multiple_initialize(const char*, int);
+			sqlite3_multiplex_initialize(0, 1);
 #endif
-    }else if( strcmp(z,"-mmap")==0 ){
-      sqlite3_int64 sz = integerValue(cmdline_option_value(argc,argv,++i));
-      sqlite3_config(SQLITE_CONFIG_MMAP_SIZE, sz, sz);
-    }else if( strcmp(z,"-vfs")==0 ){
-      sqlite3_vfs *pVfs = sqlite3_vfs_find(cmdline_option_value(argc,argv,++i));
-      if( pVfs ){
-        sqlite3_vfs_register(pVfs, 1);
-      }else{
-        utf8_printf(stderr, "no such VFS: \"%s\"\n", argv[i]);
-        exit(1);
-      }
+		}
+		else if (strcmp(z, "-mmap") == 0) {
+			sqlite3_int64 sz = integerValue(cmdline_option_value(argc, argv, ++i));
+			sqlite3_config(SQLITE_CONFIG_MMAP_SIZE, sz, sz);
+		}
+		else if (strcmp(z, "-vfs") == 0) {
+			sqlite3_vfs *pVfs = sqlite3_vfs_find(cmdline_option_value(argc, argv, ++i));
+			if (pVfs) {
+				sqlite3_vfs_register(pVfs, 1);
+			}
+			else {
+				utf8_printf(stderr, "no such VFS: \"%s\"\n", argv[i]);
+				exit(1);
+			}
 #ifdef SQLITE_HAVE_ZLIB
-    }else if( strcmp(z,"-zip")==0 ){
-      data.openMode = SHELL_OPEN_ZIPFILE;
+		}
+		else if (strcmp(z, "-zip") == 0) {
+			data.openMode = SHELL_OPEN_ZIPFILE;
 #endif
-    }else if( strcmp(z,"-append")==0 ){
-      data.openMode = SHELL_OPEN_APPENDVFS;
-    }else if( strcmp(z,"-readonly")==0 ){
-      data.openMode = SHELL_OPEN_READONLY;
+		}
+		else if (strcmp(z, "-append") == 0) {
+			data.openMode = SHELL_OPEN_APPENDVFS;
+		}
+		else if (strcmp(z, "-readonly") == 0) {
+			data.openMode = SHELL_OPEN_READONLY;
+		}
+		else if (strcmp(argv[i], "-key") == 0) {
+#ifdef SQLITE_HAS_CODEC
+			/* Process hex key from command-line.
+			** Message to SQLite developers: your parsers are NOT robust!
+			*/
+			unsigned int idx;
+			unsigned int tmpLength;
+
+			i++;
+			/* compute key length */
+			idx = i;
+			while ((argv[i][idx] != ' ') && (argv[i][idx] != '\x00')) {
+				char c = (argv[i][idx]);
+				if (!((isdigit(c)) || ((c >= 'a') && (c <= 'f')) || ((c >= 'A') && (c <= 'F')))) {
+					fprintf(stderr, "Expecting hexadecimal values for encryption key!\r\n");
+					return 1;
+				}
+				idx++;
+			}
+			tmpLength = idx;
+			if ((tmpLength % 2) != 0) {
+				fprintf(stderr, "Expecting an even number of characters for encryption key!\r\n");
+				return 1;
+			}
+
+			/* allocate key memory */
+			encryption_key_length = tmpLength / 2;
+			encryption_key = malloc(encryption_key_length);
+			if (encryption_key == NULL) {
+				fprintf(stderr, "Out of memory!\r\n");
+				return 1;
+			}
+
+			/* convert hex string into values */
+			idx = 0;
+			while ((argv[i][idx] != ' ') && (argv[i][idx] != '\x00')) {
+				char hex[3];
+				hex[0] = (argv[i][idx++]);
+				hex[1] = (argv[i][idx++]);
+				hex[2] = '\x00';
+
+				((unsigned char*)encryption_key)[(idx - 2) / 2] = (unsigned char)(0xFF & strtoul(hex, NULL, 16));
+			}
+#else
+			fprintf(stderr, "Sorry, encryption support is not available\r\n");
+			fprintf(stderr, "HINT: define 'SQLITE_HAS_CODEC' at compile time\r\n");
+			return 1;
+#endif
+		}
 #if !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_HAVE_ZLIB)
-    }else if( strncmp(z, "-A",2)==0 ){
-      /* All remaining command-line arguments are passed to the ".archive"
-      ** command, so ignore them */
-      break;
+}
+else if (strncmp(z, "-A", 2) == 0) {
+	/* All remaining command-line arguments are passed to the ".archive"
+	** command, so ignore them */
+	break;
 #endif
-    }
+
+
   }
   if( data.zDbFilename==0 ){
 #ifndef SQLITE_OMIT_MEMORYDB
@@ -16029,6 +16114,12 @@ int SQLITE_CDECL wmain(int argc, wchar_t **wargv){
           if( bail_on_error ) return rc;
         }
       }
+#ifdef SQLITE_HAS_CODEC
+	}
+	else if (strcmp(z, "-key") == 0) {
+		/* encryption key has already been set */
+		i++;
+#endif
 #if !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_HAVE_ZLIB)
     }else if( strncmp(z, "-A", 2)==0 ){
       if( nCmd>0 ){
@@ -16130,6 +16221,13 @@ int SQLITE_CDECL wmain(int argc, wchar_t **wargv){
 #if !SQLITE_SHELL_IS_UTF8
   for(i=0; i<argc; i++) free(argv[i]);
   free(argv);
+#endif
+
+#ifdef SQLITE_HAS_CODEC
+  if (encryption_key != NULL) {
+	  free(encryption_key);
+	  encryption_key = NULL;
+  }
 #endif
   return rc;
 }
