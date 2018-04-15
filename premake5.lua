@@ -288,7 +288,7 @@ project (PRJ_NAME_DLL_ICU)
   flags { "StaticRuntime" } 
   includedirs { "./3rd/include/icu" }
 
-  filter { "platforms:Win32" }
+  filter { "platforms:Win32" } 
     libdirs { "./3rd/lib/icu" }
   filter { "platforms:x64" }
     libdirs { "./3rd/lib64/icu" }
@@ -304,6 +304,15 @@ project (PRJ_NAME_DLL_ICU)
         links { "icuin", "icuuc" }
   filter {}
 
+  filter { "configurations:Release_*" }
+	filter {  "platforms:Win32"}
+		postbuildcommands { "xcopy  /r /y $(ProjectDir)..\\..\\3rd\\lib\\icu\\*.dll $(ProjectDir)$(OutDir)" }
+	filter {}
+	filter {  "platforms:x64"}
+		postbuildcommands { "xcopy  /r /y $(ProjectDir)..\\..\\3rd\\lib64\\icu\\*.dll $(ProjectDir)$(OutDir)" }
+	filter {}
+  filter {}
+  
   location( BUILDDIR.."/"..PRJ_NAME_DLL_ICU )
   targetname "sqlite3icu"
 
@@ -370,6 +379,16 @@ project (PRJ_NAME_SHELL_ICU)
     links { "icuin", "icuuc" }
   filter {}
 
+  filter { "configurations:Release_*" }
+	filter {  "platforms:Win32"}
+		postbuildcommands { "xcopy  /r /y $(ProjectDir)..\\..\\3rd\\lib\\icu\\*.dll $(ProjectDir)$(OutDir)" }
+	filter {}
+	filter {  "platforms:x64"}
+		postbuildcommands { "xcopy  /r /y $(ProjectDir)..\\..\\3rd\\lib64\\icu\\*.dll $(ProjectDir)$(OutDir)" }
+	filter {}
+  filter {}
+  
+  
   location( BUILDDIR.."/"..PRJ_NAME_SHELL_ICU )
   targetname "sqlite3shellicu"
 
