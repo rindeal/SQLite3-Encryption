@@ -31,7 +31,6 @@ BUILDDIR = _OPTIONS["builddir"] or "build"
 -- hook for the clean action
 if _ACTION == "clean" then
   os.rmdir("bin")
-  os.rmdir("build")
   -- os.execute('for /d %d in ('..SRC_DIR..'\\*.tlog) do rd /q /s "%d"')
   -- os.execute('del /Q /S /F /A *Log.htm thumbs.db *bak.def 2> NUL')
   extensions = {
@@ -48,7 +47,7 @@ if _ACTION == "clean" then
 end
 
 workspace "SQLite3"
-  configurations { "Debug_AES128", "Release_AES128", "Debug_AES256", "Release_AES256" }
+  configurations { "Debug", "Release" }
   platforms { "Win32", "x64" }
   targetdir "bin/$(Platform)/$(ProjectName)/$(Configuration)"
 --  location(BUILDDIR)
@@ -110,6 +109,7 @@ project (PRJ_NAME_LIB)
     "SQLITE_SOUNDEX",
     "SQLITE_ENABLE_COLUMN_METADATA",
     "SQLITE_HAS_CODEC=1",
+	"CODEC_TYPE=CODEC_TYPE_CHACHA20",
     "SQLITE_SECURE_DELETE",
     "SQLITE_ENABLE_FTS3",
     "SQLITE_ENABLE_FTS3_PARENTHESIS",
@@ -128,16 +128,6 @@ project (PRJ_NAME_LIB)
     "SQLITE_USE_URI",
     "SQLITE_USER_AUTHENTICATION"
   }
-
-  -- Encryption type
-  filter { "configurations:*AES128" }
-    defines {
-      "CODEC_TYPE=CODEC_TYPE_AES128"
-    }
-  filter { "configurations:*AES256" }
-    defines {
-      "CODEC_TYPE=CODEC_TYPE_AES256"
-    }
 
 -- SQLite3 shared library
 project (PRJ_NAME_DLL)
@@ -163,6 +153,7 @@ project (PRJ_NAME_DLL)
     "SQLITE_SOUNDEX",
     "SQLITE_ENABLE_COLUMN_METADATA",
     "SQLITE_HAS_CODEC=1",
+    "CODEC_TYPE=CODEC_TYPE_CHACHA20",
     "SQLITE_SECURE_DELETE",
     "SQLITE_ENABLE_FTS3",
     "SQLITE_ENABLE_FTS3_PARENTHESIS",
@@ -181,16 +172,6 @@ project (PRJ_NAME_DLL)
     "SQLITE_USE_URI",
     "SQLITE_USER_AUTHENTICATION"
   }
-
-  -- Encryption type
-  filter { "configurations:*AES128" }
-    defines {
-      "CODEC_TYPE=CODEC_TYPE_AES128"
-    }
-  filter { "configurations:*AES256" }
-    defines {
-      "CODEC_TYPE=CODEC_TYPE_AES256"
-    }
 
 
 -- SQLite3 Shell    
@@ -243,6 +224,7 @@ project (PRJ_NAME_LIB_ICU)
     "SQLITE_SOUNDEX",
     "SQLITE_ENABLE_COLUMN_METADATA",
     "SQLITE_HAS_CODEC=1",
+    "CODEC_TYPE=CODEC_TYPE_CHACHA20",
     "SQLITE_SECURE_DELETE",
     "SQLITE_ENABLE_FTS3",
     "SQLITE_ENABLE_FTS3_PARENTHESIS",
@@ -261,16 +243,6 @@ project (PRJ_NAME_LIB_ICU)
     "SQLITE_USE_URI",
     "SQLITE_USER_AUTHENTICATION"
   }
-
-  -- Encryption type
-  filter { "configurations:*AES128" }
-    defines {
-      "CODEC_TYPE=CODEC_TYPE_AES128"
-    }
-  filter { "configurations:*AES256" }
-    defines {
-      "CODEC_TYPE=CODEC_TYPE_AES256"
-    }
 
 
 -- SQLite3 shared library with ICU support
@@ -294,17 +266,13 @@ project (PRJ_NAME_DLL_ICU)
     libdirs { "./3rd/lib64/icu" }
   filter {}
 
-  filter { "configurations:Debug_AES128" }
-        links { "icuin", "icuuc" }
-  filter { "configurations:Debug_AES256" }
-        links { "icuin", "icuuc" }
-  filter { "configurations:Release_AES128" }
-        links { "icuin", "icuuc" }
-  filter { "configurations:Release_AES256" }
+  filter { "configurations:Debug*" }
+        links { "icuind", "icuucd" }
+  filter { "configurations:Release*" }
         links { "icuin", "icuuc" }
   filter {}
 
-  filter { "configurations:Release_*" }
+  filter { "configurations:Release*" }
 	filter {  "platforms:Win32"}
 		postbuildcommands { "xcopy  /r /y $(ProjectDir)..\\..\\3rd\\lib\\icu\\*.dll $(ProjectDir)$(OutDir)" }
 	filter {}
@@ -324,6 +292,7 @@ project (PRJ_NAME_DLL_ICU)
     "SQLITE_SOUNDEX",
     "SQLITE_ENABLE_COLUMN_METADATA",
     "SQLITE_HAS_CODEC=1",
+    "CODEC_TYPE=CODEC_TYPE_CHACHA20",
     "SQLITE_SECURE_DELETE",
     "SQLITE_ENABLE_FTS3",
     "SQLITE_ENABLE_FTS3_PARENTHESIS",
@@ -342,17 +311,6 @@ project (PRJ_NAME_DLL_ICU)
     "SQLITE_USE_URI",
     "SQLITE_USER_AUTHENTICATION"
   }
-
-  -- Encryption type
-  filter { "configurations:*AES128" }
-    defines {
-      "CODEC_TYPE=CODEC_TYPE_AES128"
-    }
-  filter { "configurations:*AES256" }
-    defines {
-      "CODEC_TYPE=CODEC_TYPE_AES256"
-    }
-
 
 -- SQLite3 Shell with ICU support   
 project (PRJ_NAME_SHELL_ICU)
@@ -379,7 +337,7 @@ project (PRJ_NAME_SHELL_ICU)
     links { "icuin", "icuuc" }
   filter {}
 
-  filter { "configurations:Release_*" }
+  filter { "configurations:Release*" }
 	filter {  "platforms:Win32"}
 		postbuildcommands { "xcopy  /r /y $(ProjectDir)..\\..\\3rd\\lib\\icu\\*.dll $(ProjectDir)$(OutDir)" }
 	filter {}
