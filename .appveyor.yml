@@ -8,11 +8,9 @@ platform:
   - x64
 
 configuration: 
-  - Release_AES256
-#  - Debug_AES256
-#  - Debug_AES128
-#  - Release_AES128
-  
+  - Release
+#  - Debug
+
 after_build:
   - cmd: 7z a -tzip SQLite3-Encryption_%platform%-v%APPVEYOR_BUILD_VERSION%.zip bin/ -xr@x_fn.txt
   - ps: Get-ChildItem .\*.zip | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
