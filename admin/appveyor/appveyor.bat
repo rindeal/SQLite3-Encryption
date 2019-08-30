@@ -3,7 +3,7 @@ goto %TOOLSET%
 
 :msbuild
 cd build
-msbuild /m:2 /v:n /p:Platform=%ARCH% /p:Configuration="%CONFIGURATION%"  SQLite3Secure_vc15.sln %MSBUILD_LOGGER%
+msbuild /m:2 /v:n /p:Platform=%ARCH% /p:Configuration="%CONFIGURATION%" /p:AdditionalIncludePaths=%AdditionalIncludePaths% /p:AdditionalLibPaths=%AdditionalLibPaths% SQLite3Secure_vc15.sln %MSBUILD_LOGGER%
 goto :eof
 
 :error
