@@ -25,6 +25,8 @@ before_build:
   - set ICU_DATA=C:\ICU_DATA
   - set AdditionalLibPaths=C:\ICU_DATA\bin;C:\ICU_DATA\lib
   - set AdditionalIncludePaths=C:\ICU_DATA\Include
+  - set INCLUDE=C:\ICU_DATA\Include
+  - set LIB=C:\ICU_DATA\bin;C:\ICU_DATA\lib
   - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-data.zip'
   - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip'
   - cmd: 7z x icu4c-64_2-data.zip -oC:\ICU_DATA
