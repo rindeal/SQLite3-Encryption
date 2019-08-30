@@ -17,6 +17,16 @@ environment:
 # clone directory
 clone_folder: c:\projects\sqlite3enc
 
+install:
+  - ECHO Installing %COMPILER% %PLATFORM% %CONFIGURATION%
+  - if [%COMPILER%]==[gcc] SET PATH_ORIGINAL=%PATH%
+  - if [%COMPILER%]==[gcc] (
+      SET "PATH_MINGW32=c:\MinGW\bin;c:\MinGW\usr\bin" &&
+      SET "PATH_MINGW64=c:\msys64\mingw64\bin;c:\msys64\usr\bin" &&
+      COPY C:\MinGW\bin\mingw32-make.exe C:\MinGW\bin\make.exe &&
+      COPY C:\MinGW\bin\gcc.exe C:\MinGW\bin\cc.exe
+    )
+
 before_build:
   # set environment variables for SQLite3Enc
   - set ICU_DATA=C:\ICU_DATA
