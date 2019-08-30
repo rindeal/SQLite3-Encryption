@@ -6,7 +6,7 @@ cd build
 echo %INCLUDE%
 echo %LIB%
 echo %PATH%
-dir C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin\mingw*.exe
+mkdir obj-gcc
 mingw32-make.exe -f Makefile config=%CONFIGURATIONS% all
 goto :eof
 
