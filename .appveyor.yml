@@ -9,9 +9,9 @@ branches:
 # environments
 environment:
   matrix:
-  - TOOLSET: msbuild
-    CONFIGURATION: Release
-    ARCH: Win64
+    - COMPILER: "gcc"
+      HOST:     "mingw"
+      PLATFORM: "x64"
 #  - TOOLSET: cmake
 #    GENERATOR: 'Visual Studio 14.1'
 #    SHARED: ON
@@ -26,13 +26,10 @@ before_build:
   - set AdditionalLibPaths=C:\ICU_DATA\bin;C:\ICU_DATA\lib
   - set INCLUDE=C:\ICU_DATA\include
   - set LIB=C:\ICU_DATA\bin;C:\ICU_DATA\lib
-  - set AdditionalIncludeDirectories="C:\ICU_DATA\include"
   - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-data.zip'
   - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip'
   - cmd: 7z x icu4c-64_2-data.zip -oC:\ICU_DATA
   - cmd: 7z x icu4c-64_2-Win64-MSVC2017.zip -oC:\ICU_DATA
-  - cmd: ls %ICU_DATA%\include
-
 
 # build script
 build_script: c:\projects\sqlite3enc\admin\appveyor\appveyor.bat
