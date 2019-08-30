@@ -5,7 +5,9 @@ if exist "C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw32\bin\g++.exe" se
 cd build
 echo %INCLUDE%
 echo %LIB%
-mingw32-make.exe  -f Makefile config=%CONFIGURATIONS% all
+echo %PATH%
+dir C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\
+make -f Makefile config=%CONFIGURATIONS% all
 goto :eof
 
 :error
