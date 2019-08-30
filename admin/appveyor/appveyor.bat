@@ -3,9 +3,9 @@ goto %TOOLSET%
 
 :msbuild
 cd build
-set INCLUDE=%INCLUDE%
-set LIB=%LIB%
-msbuild /m:2 /v:n /p:Platform=%ARCH% /p:Configuration="%CONFIGURATION%" /p:AdditionalIncludeDirectories="%AdditionalIncludePaths%" /p:AdditionalLibPaths="%AdditionalLibPaths%" SQLite3Secure_vc15.sln %MSBUILD_LOGGER%
+cmd: echo %INCLUDE%
+cmd: echo %LIB%
+msbuild /m:2 /v:n /p:Platform=%ARCH% /p:Configuration="%CONFIGURATION%" SQLite3Secure_vc15.sln %MSBUILD_LOGGER%
 goto :eof
 
 :error
