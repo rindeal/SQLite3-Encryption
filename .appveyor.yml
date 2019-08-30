@@ -9,6 +9,7 @@ environment:
     - COMPILER: "gcc"
       HOST:     "mingw"
       PLATFORM: "x64"
+      CONFIGURATIONS: "release_win64"
 #  - TOOLSET: cmake
 #    GENERATOR: 'Visual Studio 14.1'
 #    SHARED: ON
