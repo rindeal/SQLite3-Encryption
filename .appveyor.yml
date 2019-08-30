@@ -1,6 +1,3 @@
-image:
-  - Visual Studio 2017
-
 # branches to build
 branches:
   only:
