@@ -1,30 +1,53 @@
 image:
-  - Visual Studio 2015
-before_build:
-  - cmd: premake.bat
-  
-platform:
-  - Win32
-  - x64
+  - Visual Studio 2017
 
-configuration: 
-  - Release
-#  - Debug
+# branches to build
+branches:
+  only:
+    - master
+
+# environments
+environment:
+  matrix:
+  - TOOLSET: msbuild
+    CONFIGURATION: Release Win64
+    ARCH: x64
+#  - TOOLSET: cmake
+#    GENERATOR: 'Visual Studio 14.1'
+#    SHARED: ON
+#    CONFIGURATION: Release
+
+# clone directory
+clone_folder: c:\projects\sqlite3enc
+
+before_build:
+  # set environment variables for SQLite3Enc
+  - set ICU_DATA=C:\ICU_DATA
+  - set INCLUDE=C:\ICU_DATA\Include;%INCLUDE%
+  - set LIB=C:\ICU_DATA\bin;C:\ICU_DATA\lib;%LIB%
+  - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-data.zip'
+  - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip'
+  - cmd: 7z x icu4c-64_2-data.zip -oC:\ICU_DATA
+  - cmd: 7z x icu4c-64_2-Win64-MSVC2017.zip -oC:\ICU_DATA
+
+# build script
+build_script: c:\projects\sqlite3enc\admin\appveyor\appveyor.bat
 
 after_build:
-  - cmd: 7z a -tzip SQLite3-Encryption_%platform%-v%APPVEYOR_BUILD_VERSION%.zip bin/ -xr@x_fn.txt
-  - ps: Get-ChildItem .\*.zip | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
-
-deploy:
-   release: SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%
-   description: "update sqlite3 to v3.23.1"
-   provider: GitHub
-   auth_token:
-    secure: YiRkHuWnabCRwdYGhwkPZRSUJmVb/UeKn3YEQ+0mLTfIsGKrVUfDKdObe/MsYf1A
-   draft: false
-   prerelease: false
-   on:
-      branch: master
+  - cmd: ls c:\projects\sqlite3enc
+#  - cmd: 7z a -tzip SQLite3-Encryption_%platform%-v%APPVEYOR_BUILD_VERSION%.zip bin/ -xr@x_fn.txt
+#  - ps: Get-ChildItem .\*.zip | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+#
+#deploy:
+#   release: SQLite3-Encryption-v%APPVEYOR_BUILD_VERSION%
+#   description: "update sqlite3 to v3.29.0"
+#   provider: GitHub
+#   auth_token:
+#    secure: YiRkHuWnabCRwdYGhwkPZRSUJmVb/UeKn3YEQ+0mLTfIsGKrVUfDKdObe/MsYf1A
+#   draft: false
+#   prerelease: false
+#   on:
+#      branch: master
 #   appveyor_repo_tag: false
 
 on_success:
