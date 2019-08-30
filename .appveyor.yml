@@ -25,10 +25,16 @@ before_build:
   - set ICU_DATA=C:\ICU_DATA
   - set INCLUDE=C:\ICU_DATA\Include;%INCLUDE%
   - set LIB=C:\ICU_DATA\bin;C:\ICU_DATA\lib;%LIB%
+  - set ILink_LibraryPath=C:\ICU_DATA\bin;C:\ICU_DATA\lib;%LIB%
+  - set AdditionalLibPaths=C:\ICU_DATA\Include
+  - set UseEnv=true
   - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-data.zip'
   - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip'
   - cmd: 7z x icu4c-64_2-data.zip -oC:\ICU_DATA
   - cmd: 7z x icu4c-64_2-Win64-MSVC2017.zip -oC:\ICU_DATA
+  - cmd: ls %ICU_DATA%
+  - cmd: echo %INCLUDE%
+  - cmd: echo %LIB%
 
 # build script
 build_script: c:\projects\sqlite3enc\admin\appveyor\appveyor.bat
