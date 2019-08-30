@@ -10,7 +10,7 @@ branches:
 environment:
   matrix:
   - TOOLSET: msbuild
-    CONFIGURATION: Release Win64
+    CONFIGURATION: Release
     ARCH: x64
 #  - TOOLSET: cmake
 #    GENERATOR: 'Visual Studio 14.1'
