@@ -11,7 +11,7 @@ environment:
   matrix:
   - TOOLSET: msbuild
     CONFIGURATION: Release
-    ARCH: x64
+    ARCH: Win64
 #  - TOOLSET: cmake
 #    GENERATOR: 'Visual Studio 14.1'
 #    SHARED: ON
