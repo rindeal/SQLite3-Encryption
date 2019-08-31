@@ -34,7 +34,7 @@ build_script:
   - cmd: c:\projects\sqlite3enc\admin\appveyor\appveyor.bat
 
 after_build:
-  - cmd: ls c:\projects\sqlite3enc
+  - cmd: cd c:\projects\sqlite3enc
   - cmd: 7z a -tzip SQLite3-Encryption_%ARCH%-v%APPVEYOR_BUILD_VERSION%.zip bin-vc15/ -xr@x_fn.txt
   - ps: Get-ChildItem .\*.zip | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
 #
