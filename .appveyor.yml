@@ -11,10 +11,10 @@ environment:
   matrix:
     - ARCH: "Win64"
       TOOLSET: msbuild
-      CONFIGURATIONS: "release"
+      CONFIGURATIONS: "Release"
     - ARCH: "Win32"
       TOOLSET: msbuild
-      CONFIGURATIONS: "release"
+      CONFIGURATIONS: "Release"
 # clone directory
 clone_folder: c:\projects\sqlite3enc
 
