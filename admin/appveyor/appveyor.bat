@@ -4,8 +4,7 @@ goto %TOOLSET%
 :mingw32
 cd build
 gcc -v
-dir C:\Qt\5.13.0\mingw73_32\bin
-set PATH=C:\Qt\5.13.0\mingw73_32\bin;%PATH%
+dir C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin
 mingw32-make.exe -f Makefile config=%CONFIGURATIONS% all
 goto :eof
 
@@ -13,8 +12,7 @@ goto :eof
 :mingw64
 cd build
 gcc -v
-dir C:\Qt\5.13.0\mingw73_64\bin
-set PATH=C:\Qt\5.13.0\mingw73_64\bin;%PATH%
+dir C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin
 mingw32-make.exe -f Makefile config=%CONFIGURATIONS% all
 goto :eof
 
