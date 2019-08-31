@@ -4,7 +4,7 @@ goto %TOOLSET%
 
 :msbuild
 cd build
-msbuild /m:2 /v:n /p:Platform=%ARCH% /p:Configuration="%CONFIGURATION%" SQLite3Secure_vc15.sln %MSBUILD_LOGGER%
+msbuild /m:2 /v:n /p:Platform=%ARCH% /p:Configuration="%CONFIGURATION%" SQLite3Secure_vc15.sln %MSBUILD_LOGGER% /T:Package /P:PackageLocation="c:\projects\sqlite3enc\sqlite3enc-%CONFIGURATION%-%ARCH%.zip"
 goto :eof
 
 :error
