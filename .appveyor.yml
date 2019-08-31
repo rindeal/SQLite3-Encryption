@@ -49,12 +49,8 @@ before_build:
 
 # build script
 build_script:
-  - if [%PLATFORM%]==[x32] (
-    SET PATH=%PATH_MINGW32%;%PATH_ORIGINAL%
-    )
-  - if [%PLATFORM%]==[x64] (
-    SET PATH=%PATH_MINGW64%;%PATH_ORIGINAL%
-    )
+  - if [%PLATFORM%]==[x32] SET PATH=%PATH_MINGW32%;%PATH_ORIGINAL%
+  - if [%PLATFORM%]==[x64] SET PATH=%PATH_MINGW64%;%PATH_ORIGINAL%
   - cmd: c:\projects\sqlite3enc\admin\appveyor\appveyor.bat
 
 after_build:
