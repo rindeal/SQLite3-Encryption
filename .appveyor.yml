@@ -1,3 +1,6 @@
+image:
+  - Visual Studio 2017
+
 # branches to build
 branches:
   only:
@@ -10,6 +13,10 @@ environment:
       HOST:     "mingw"
       PLATFORM: "x64"
       CONFIGURATIONS: "release_win64"
+    - COMPILER: "gcc"
+      HOST:     "mingw"
+      PLATFORM: "x32"
+      CONFIGURATIONS: "release_win32"
 #  - TOOLSET: cmake
 #    GENERATOR: 'Visual Studio 14.1'
 #    SHARED: ON
@@ -19,13 +26,12 @@ environment:
 clone_folder: c:\projects\sqlite3enc
 
 install:
+  # use MinGW Toolchain from Qt 5.13.0
   - ECHO Installing %COMPILER% %PLATFORM% %CONFIGURATION%
   - if [%COMPILER%]==[gcc] SET PATH_ORIGINAL=%PATH%
   - if [%COMPILER%]==[gcc] (
-      SET "PATH_MINGW32=c:\MinGW\bin;c:\MinGW\usr\bin" &&
-      SET "PATH_MINGW64=c:\msys64\mingw64\bin;c:\msys64\usr\bin" &&
-      COPY C:\MinGW\bin\mingw32-make.exe C:\MinGW\bin\make.exe &&
-      COPY C:\MinGW\bin\gcc.exe C:\MinGW\bin\cc.exe
+      SET "PATH_MINGW32=C:\Qt\5.13.0\mingw73_32\bin" &&
+      SET "PATH_MINGW64=C:\Qt\5.13.0\mingw73_64\bin" &&
     )
 
 before_build:
@@ -33,12 +39,23 @@ before_build:
   - set LIBICU_PATH=C:\ICU_DATA
   - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-data.zip'
   - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip'
-  - cmd: 7z x icu4c-64_2-data.zip -oC:\ICU_DATA
-  - cmd: 7z x icu4c-64_2-Win64-MSVC2017.zip -oC:\ICU_DATA
+  - ps: Start-FileDownloadhttps://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win32-MSVC2017.zip
+  - cmd: 7z x icu4c-64_2-data.zip -o%LIBICU_PATH%
+  - cmd: 7z x icu4c-64_2-Win64-MSVC2017.zip -o%LIBICU_PATH%
+  - cmd: 7z x icu4c-64_2-Win32-MSVC2017.zip -o%LIBICU_PATH%
   - cmd: c:\projects\sqlite3enc\premake.bat --builddir=build --cc=gcc gmake2
 
 # build script
-build_script: c:\projects\sqlite3enc\admin\appveyor\appveyor.bat
+build_script:
+  - if [%PLATFORM%]==[x32] (
+    SET PATH=%PATH_MINGW32%;%PATH_ORIGINAL%
+    SET TOOLSET=mingw32
+    )
+  - if [%PLATFORM%]==[x64] (
+    SET PATH=%PATH_MINGW64%;%PATH_ORIGINAL%
+        SET TOOLSET=mingw64
+    )
+  -cmd: c:\projects\sqlite3enc\admin\appveyor\appveyor.bat
 
 after_build:
   - cmd: ls c:\projects\sqlite3enc
