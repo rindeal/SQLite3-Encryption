@@ -1,5 +1,5 @@
 image:
-  - Visual Studio 2015
+  - Visual Studio 2017
 
 # branches to build
 branches:
@@ -9,21 +9,14 @@ branches:
 # environments
 environment:
   matrix:
-    - COMPILER: "gcc"
-      HOST:     "mingw"
-      PLATFORM: "x64"
-      TOOLSET: mingw64
-      CONFIGURATIONS: "release_win64"
-
+    - ARCH: "Win64"
+      TOOLSET: msbuild
+      CONFIGURATIONS: "release"
+    - ARCH: "Win32"
+      TOOLSET: msbuild
+      CONFIGURATIONS: "release"
 # clone directory
 clone_folder: c:\projects\sqlite3enc
-
-install:
-  - ECHO Installing %COMPILER% %PLATFORM% %CONFIGURATION%
-  - if [%COMPILER%]==[gcc] SET PATH_ORIGINAL=%PATH%
-  - if [%COMPILER%]==[gcc] (
-      SET "PATH_MINGW64=C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin"
-    )
 
 before_build:
   # set environment variables for SQLite3Enc
@@ -32,11 +25,10 @@ before_build:
   - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip'
   - cmd: 7z x -y icu4c-64_2-Win64-MSVC2017.zip -o%LIBICU_PATH%
   - cmd: 7z x icu4c-64_2-data.zip -o%LIBICU_PATH%
-  - cmd: c:\projects\sqlite3enc\premake.bat --builddir=build --cc=gcc gmake2
+  - cmd: c:\projects\sqlite3enc\premake.bat --builddir=build vs2017
 
 # build script
 build_script:
-  - if [%PLATFORM%]==[x64] SET PATH=%PATH_MINGW64%;%PATH_ORIGINAL%
   - cmd: c:\projects\sqlite3enc\admin\appveyor\appveyor.bat
 
 after_build:
