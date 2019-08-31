@@ -31,7 +31,7 @@ install:
   - if [%COMPILER%]==[gcc] SET PATH_ORIGINAL=%PATH%
   - if [%COMPILER%]==[gcc] (
       SET "PATH_MINGW32=C:\Qt\5.13.0\mingw73_32\bin" &&
-      SET "PATH_MINGW64=C:\Qt\5.13.0\mingw73_64\bin" &&
+      SET "PATH_MINGW64=C:\Qt\5.13.0\mingw73_64\bin"
     )
 
 before_build:
