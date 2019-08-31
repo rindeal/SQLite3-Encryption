@@ -9,12 +9,12 @@ branches:
 # environments
 environment:
   matrix:
-    - ARCH: "Win64"
+    - ARCH: Win64
       TOOLSET: msbuild
-      CONFIGURATIONS: "Release"
-    - ARCH: "Win32"
+      CONFIGURATIONS: Release
+    - ARCH: Win32
       TOOLSET: msbuild
-      CONFIGURATIONS: "Release"
+      CONFIGURATIONS: Release
 # clone directory
 clone_folder: c:\projects\sqlite3enc
 
