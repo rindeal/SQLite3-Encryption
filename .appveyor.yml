@@ -53,9 +53,9 @@ build_script:
     )
   - if [%PLATFORM%]==[x64] (
     SET PATH=%PATH_MINGW64%;%PATH_ORIGINAL%
-        SET TOOLSET=mingw64
+    SET TOOLSET=mingw64
     )
-  -cmd: c:\projects\sqlite3enc\admin\appveyor\appveyor.bat
+  - cmd: c:\projects\sqlite3enc\admin\appveyor\appveyor.bat
 
 after_build:
   - cmd: ls c:\projects\sqlite3enc
