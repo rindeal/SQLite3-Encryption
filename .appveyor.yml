@@ -39,7 +39,7 @@ before_build:
   - set LIBICU_PATH=C:\ICU_DATA
   - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-data.zip'
   - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip'
-  - ps: Start-FileDownloadhttps://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win32-MSVC2017.zip
+  - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win32-MSVC2017.zip'
   - cmd: 7z x icu4c-64_2-data.zip -o%LIBICU_PATH%
   - cmd: 7z x icu4c-64_2-Win64-MSVC2017.zip -o%LIBICU_PATH%
   - cmd: 7z x icu4c-64_2-Win32-MSVC2017.zip -o%LIBICU_PATH%
