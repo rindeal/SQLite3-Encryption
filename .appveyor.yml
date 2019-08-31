@@ -14,42 +14,28 @@ environment:
       PLATFORM: "x64"
       TOOLSET: mingw64
       CONFIGURATIONS: "release_win64"
-    - COMPILER: "gcc"
-      HOST:     "mingw"
-      PLATFORM: "x32"
-      TOOLSET: mingw32
-      CONFIGURATIONS: "release_win32"
-#  - TOOLSET: cmake
-#    GENERATOR: 'Visual Studio 14.1'
-#    SHARED: ON
-#    CONFIGURATION: Release
 
 # clone directory
 clone_folder: c:\projects\sqlite3enc
 
 install:
-  # use MinGW Toolchain from Qt 5.13.0
   - ECHO Installing %COMPILER% %PLATFORM% %CONFIGURATION%
   - if [%COMPILER%]==[gcc] SET PATH_ORIGINAL=%PATH%
   - if [%COMPILER%]==[gcc] (
-      SET "PATH_MINGW32=C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin" &&
-      SET "PATH_MINGW64=C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin"
+      SET "PATH_MINGW64=C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin"
     )
 
 before_build:
   # set environment variables for SQLite3Enc
   - set LIBICU_PATH=C:\ICU_DATA
   - ps: Start-FileDownload  'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-data.zip'
-  - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win32-MSVC2017.zip'
   - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip'
-  - cmd: 7z x -y icu4c-64_2-Win32-MSVC2017.zip -o%LIBICU_PATH%
   - cmd: 7z x -y icu4c-64_2-Win64-MSVC2017.zip -o%LIBICU_PATH%
   - cmd: 7z x icu4c-64_2-data.zip -o%LIBICU_PATH%
   - cmd: c:\projects\sqlite3enc\premake.bat --builddir=build --cc=gcc gmake2
 
 # build script
 build_script:
-  - if [%PLATFORM%]==[x32] SET PATH=%PATH_MINGW32%;%PATH_ORIGINAL%
   - if [%PLATFORM%]==[x64] SET PATH=%PATH_MINGW64%;%PATH_ORIGINAL%
   - cmd: c:\projects\sqlite3enc\admin\appveyor\appveyor.bat
 
