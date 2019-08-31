@@ -30,14 +30,12 @@ install:
 
 before_build:
   # set environment variables for SQLite3Enc
-  - set ICU_DATA=C:\ICU_DATA
-  - set AdditionalLibPaths=C:\ICU_DATA\bin;C:\ICU_DATA\lib
-  - set INCLUDE=C:\ICU_DATA\include
-  - set LIB=C:\ICU_DATA\bin;C:\ICU_DATA\lib
+  - set LIBICU_PATH=C:\ICU_DATA
   - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-data.zip'
   - ps: Start-FileDownload 'https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip'
   - cmd: 7z x icu4c-64_2-data.zip -oC:\ICU_DATA
   - cmd: 7z x icu4c-64_2-Win64-MSVC2017.zip -oC:\ICU_DATA
+  - cmd: c:\projects\sqlite3enc\premake.bat --builddir=build --cc=gcc gmake2
 
 # build script
 build_script: c:\projects\sqlite3enc\admin\appveyor\appveyor.bat
