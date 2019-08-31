@@ -12,10 +12,12 @@ environment:
     - COMPILER: "gcc"
       HOST:     "mingw"
       PLATFORM: "x64"
+      TOOLSET: mingw64
       CONFIGURATIONS: "release_win64"
     - COMPILER: "gcc"
       HOST:     "mingw"
       PLATFORM: "x32"
+      TOOLSET: mingw32
       CONFIGURATIONS: "release_win32"
 #  - TOOLSET: cmake
 #    GENERATOR: 'Visual Studio 14.1'
@@ -49,11 +51,9 @@ before_build:
 build_script:
   - if [%PLATFORM%]==[x32] (
     SET PATH=%PATH_MINGW32%;%PATH_ORIGINAL%
-    SET TOOLSET=mingw32
     )
   - if [%PLATFORM%]==[x64] (
     SET PATH=%PATH_MINGW64%;%PATH_ORIGINAL%
-    SET TOOLSET=mingw64
     )
   - cmd: c:\projects\sqlite3enc\admin\appveyor\appveyor.bat
 
